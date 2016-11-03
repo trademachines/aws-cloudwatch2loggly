@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+- '4.3'
+after_success:
+- npm run coveralls
+before_deploy:
+- npm prune --production
+deploy:
+  provider: lambda
+  function_name: prd-cloudwatch2loggly
+  description: Computes additional metrics for AWS resources
+  module_name: src/index
+  handler_name: handle
+  role: arn:aws:iam::608300940987:role/lambda-cloudwatch2loggly
+  runtime: nodejs4.3
+  memory_size: 256
+  timeout: 60
+  region: eu-west-1
+  access_key_id:
+    secure: Ze+leZKpXairLUYLFoRB2MmgMr5gBLCJUfkXj4pG2LJstQDUxJvIufLx+8cSLwWbchq0U+LJENktWKrGrdvpBZujWZiYEBDp9r+3sVA+QGLijwH6/hLcGr/gJaMYFvfGAg/M2qvnlPyMmP2kqF6te8D3PPXG9OwGZuIvGV8g8ojx716RCqoQId051DCDwNhNartWTwzizhjRkWDq4q5gqUKDSdufv8iH+QwRI2Xs6MMVFp8iky/7vr5wWSgYMq9cMSb7sSZlP90mOcpsL4HKGyRhY+A3v0cE0AniEqQjc4fd5SY52893YPDIJxUfFAzMlJmpaRP9W1H0KwnvTe1siyxXkNNmfcViQ7YtdFwm18jle8xFkAgFw64w4/qKFv5UNlsSJQSh75YRbKaNVPwDQ9NUYUVkLIzX/vLnbq0tPedQhwpuzT1U7umUIpxM5jC4+EkBQI6JWUefz6YBNGNy+AfT+T9rTcVEKUKFUz0eYy5SrFi8KCri6Eb5JR+eu4UJ9uSsO0AE+gn89h5AtS/5tgKWHc1zeDaS9cHFMTWXUS7u36us0m2VwhDQcEUF9K/3SUrKwU+M+Ejci9xhNkEET1l2UDJfwHA5aiA1AaiW+i3sbh9d63JuOybPK1GUu+elJao1eNFgps8ZJ58qMKcYyhn1z+aWr4rKKLewgMKWQrg=
+  secret_access_key:
+    secure: jA8HnWxA+4iKD6h5e2FnK9OHPqkzeeOSMPOzGzv10HV+8J4/l5seRvRdHNA4zYoFnMK5sxx2u8YgR4kq3/Ik33Wf4MWXBEFlcyPoxiZtldNEUKfYQz1jy9OJRDl6NJJ5onMkpk7IGBGajVlE193o3dsiCKQN8BCSHJnO3lo7VLrFIeKDYfMK3r8VE7DG1rNf8IYIkQN/EU0D/5I2YB4UlzvbK0xQWqT3Hhj3qGlEzwoF8puvxxp5gEGUo2ArpJXHaYEXiAdidSL1BeM8eJUoKWNK2IGDm4urvJBbX8uJyOqdW3mmDKPYj1y/1ek0UyBJOo1FxPhaTyavVStsU6m9X/TXxJjhLm2EIjGlZLXY+CuEVCSqoIrGFLhhoBpJrjavK9yTfChAgA1fqom7mtXFAs9z278couE8fYq2G5WOy9xEIIi6uepfvkMvnlGxqt9ekCwEwIbajZfB2h5ea+lndUmEuLjneMGfLLE0tX6OKeGP7uXol/flhWrY5djeWWBY/VmgI+s0WoG/u3Jg0W7zY9OBMgzxjN4eAVlg3y0W4HPVaPCsp1UHLq9kWQdyS0gVLFUla2TBmSsXSxCC+m39aXQqqCUOuSVCSfcYcEfY7jsZFo87uEZvqeU5JxSL1R2azhujadA3z0t2Ai2MHSTKqL9ZX/l1zqyirjuKUaWUjHg=
+  on:
+    branch: master
