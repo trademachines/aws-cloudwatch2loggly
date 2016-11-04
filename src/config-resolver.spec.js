@@ -36,7 +36,7 @@ describe('resolve config', () => {
 
     configResolver.resolve(kms, encryptedCfg, (err, cfg) => {
       if (err) {
-        return done.fail();
+        return done.fail(err);
       }
 
       const expectedConfig = {

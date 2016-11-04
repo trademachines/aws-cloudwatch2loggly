@@ -7,7 +7,8 @@
     "eslint-config-google": "^0.7.0",
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
-    "jasmine-spec-reporter": "^2.7.0"
+    "jasmine-spec-reporter": "^2.7.0",
+    "nock": "^9.0.2"
   },
   "dependencies": {
     "aws-lambda-config": "0.0.1",
