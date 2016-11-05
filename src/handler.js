@@ -5,13 +5,19 @@ const async = require('neo-async');
 const zlib  = require('zlib');
 const http  = require('http');
 
-let httpOptions = null;
+let httpOptions = {};
 
-const buildHttpOptions = (cfg, contentLength) => {
-  if (!httpOptions) {
-    httpOptions = {
-      hostname: cfg.host,
-      path: '/bulk/' + cfg.token + '/tag/' + encodeURIComponent(cfg.tags),
+const buildHttpOptions = (cfg, group, contentLength) => {
+  if (!httpOptions[group]) {
+    let groupCfg = !!cfg.__groupMap
+      ? cfg.__groupMap[group]
+      : {};
+    groupCfg     = groupCfg ? groupCfg : {};
+    groupCfg     = Object.assign(cfg, groupCfg);
+
+    httpOptions[group] = {
+      hostname: groupCfg.host,
+      path: `/bulk/${groupCfg.token}/tag/${encodeURIComponent(groupCfg.tags)}`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -20,7 +26,8 @@ const buildHttpOptions = (cfg, contentLength) => {
     };
   }
 
-  let current                       = Object.assign({}, httpOptions);
+  let current = Object.assign({}, httpOptions[group]);
+
   current.headers['Content-Length'] = contentLength;
 
   return current;
@@ -64,9 +71,9 @@ const httpRequest = (options, data, cb) => {
   request.end();
 };
 
-const sendToLoggly = (cfg, events, cb) => {
+const sendToLoggly = (cfg, group, events, cb) => {
   const zehEvent = events.map(JSON.stringify).join('\n');
-  const options  = buildHttpOptions(cfg, zehEvent.length);
+  const options  = buildHttpOptions(cfg, group, zehEvent.length);
 
   httpRequest(options, zehEvent, cb);
 };
@@ -88,10 +95,14 @@ module.exports = (err, cfg, event, context, cb) => {
         async.map(
           parsed.logEvents,
           _.partial(parseLogEvent, parsed.logGroup, parsed.logStream),
-          cb
+          (err, events) => {
+            cb(err, {group: parsed.logGroup, events: events});
+          }
         );
       },
-      _.partial(sendToLoggly, cfg),
+      (parsed, cb) => {
+        sendToLoggly(cfg, parsed.group, parsed.events, cb);
+      },
     ],
     (err) => {
       if (err) {
@@ -104,7 +115,7 @@ module.exports = (err, cfg, event, context, cb) => {
 };
 
 module.exports.reset            = () => {
-  httpOptions = null;
+  httpOptions = {};
 };
 module.exports.parseLogEvent    = parseLogEvent;
 module.exports.sendToLoggly     = sendToLoggly;

@@ -17,7 +17,8 @@ describe('handle events', () => {
 
   describe('build http options', () => {
     it('uses host from config', () => {
-      const options = handler.buildHttpOptions({host: 'some.url.com'}, 0);
+      const cfg     = {host: 'some.url.com'};
+      const options = handler.buildHttpOptions(cfg, 'none', 0);
 
       expect(options).toEqual(jasmine.objectContaining({
         hostname: 'some.url.com',
@@ -25,7 +26,8 @@ describe('handle events', () => {
     });
 
     it('uses token from config', () => {
-      const options = handler.buildHttpOptions({token: 'secret-token'}, 0);
+      const cfg     = {token: 'secret-token'};
+      const options = handler.buildHttpOptions(cfg, 'none', 0);
 
       expect(options).toEqual(jasmine.objectContaining({
         path: jasmine.stringMatching('/secret-token/'),
@@ -33,10 +35,31 @@ describe('handle events', () => {
     });
 
     it('uses tags from config', () => {
-      const options = handler.buildHttpOptions({token: 'foo,bar'}, 0);
+      const cfg     = {tags: 'foo'};
+      const options = handler.buildHttpOptions(cfg, 'none', 0);
 
       expect(options).toEqual(jasmine.objectContaining({
-        path: jasmine.stringMatching('/foo,bar'),
+        path: jasmine.stringMatching('/foo'),
+      }));
+    });
+
+    it('uses different settings for specific groups', () => {
+      const cfg     = {
+        host: 'generic',
+        tags: 'foo',
+        token: 'token-1',
+        __groupMap: {
+          specific: {
+            host: 'specific',
+            tags: 'bar',
+          },
+        },
+      };
+      const options = handler.buildHttpOptions(cfg, 'specific', 0);
+
+      expect(options).toEqual(jasmine.objectContaining({
+        hostname: 'specific',
+        path: jasmine.stringMatching('/bar'),
       }));
     });
   });
@@ -84,7 +107,7 @@ describe('handle events', () => {
       .post(/^\/bulk\//, `{"event":1}\n{"event":2}`)
       .reply(200, 'ok');
 
-    handler.sendToLoggly({host: 'domain.com'}, events, (err) => {
+    handler.sendToLoggly({host: 'domain.com'}, 'group', events, (err) => {
       if (err) {
         return done.fail(err);
       }
