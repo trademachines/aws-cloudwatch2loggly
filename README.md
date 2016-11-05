@@ -14,18 +14,18 @@ your log entries will be tagged with. And last but not least the ``token`` that 
 for communicating with Loggly.
 
 ### Configuration example
-````
+```
 {
   "host": "logs-01.loggly.com",
   "tags": "production,cloudwatch2loggly",
   "token": "ENC[KMS,...]",
   "__groupMap": {
     "different-log-group-name": {
-      "tags": "staging,cloudwatch2loggly",
+      "tags": "staging,cloudwatch2loggly"
     }
   }
 }
-````
+```
 
 ## Provisioning resources
 We use [Terraform](https://www.terraform.io/) for setting up the necessary resources at AWS. If
@@ -34,9 +34,8 @@ you do it differently the drill goes like this:
 * Create a role that has either the ``CloudWatchFullAccess`` and ``AmazonS3ReadOnlyAccess`` policies attached or create more fine grained policies for your specific needs.
 * Upload your configuration file (see example above) to an appropriate S3 bucket according to [the aws-lambda-config package](https://www.npmjs.com/package/aws-lambda-config).
 * If you care about security:
-** Encrypt the token with ``aws kms encrypt --key-id alias/<your KMS key alias> --plaintext "<your loggly customer token>" --query CiphertextBlob --output text``
-   and wrap the response as it can be seen in the configuration example. 
-** Add access for the Lambda role to the key you just used.
+  * Encrypt the token with ``aws kms encrypt --key-id alias/<your KMS key alias> --plaintext "<your loggly customer token>" --query CiphertextBlob --output text`` and wrap the response as it can be seen in the configuration example. 
+  * Enable the IAM role used for the Lambda to use that key.
 * Then Create a Lambda function, point the handler to ``src/index.handle``, use the role that you just created and
   add the subscription for a Cloudwatch Log Group
 
