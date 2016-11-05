@@ -1,7 +1,9 @@
 # AWS Cloudwatch2Loggly
 
 ## Intention
-Inspired by https://github.com/varshneyjayant/cloudwatch2loggly 
+Inspired by [cloudwatch2loggly](https://github.com/varshneyjayant/cloudwatch2loggly) we developed
+this tool to stream from multiple input sources, enrich the log information and forward it to
+multiple output sources without the necessity to change to implementation itself.
 
 ## Configuration
 Is done via retrieving the configuration file from S3 by utilising [the aws-lambda-config package](https://www.npmjs.com/package/aws-lambda-config).
