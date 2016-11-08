@@ -5,6 +5,13 @@ Inspired by [cloudwatch2loggly](https://github.com/varshneyjayant/cloudwatch2log
 this tool to stream from multiple input sources, enrich the log information and forward it to
 multiple output sources without the necessity to change to implementation itself.
 
+## Use cases
+Our primary use case is moving Docker container logs from AWS ECS to Loggly by piping them through
+Cloudwatch to get them off the host systems. We do so by enabling the
+[awslogs driver](http://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#d0e13162)
+in the ECS task definitions and setting the ``awslogs-stream-prefix`` to the actual service name.
+The Lambda function then takes care of destructuring the information and forward them to Loggly.
+
 ## Configuration
 Is done via retrieving the configuration file from S3 by utilising [the aws-lambda-config package](https://www.npmjs.com/package/aws-lambda-config).
 On top of that the config is cached for the lifetime of the Lambda function and you can insert a KMS
