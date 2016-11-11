@@ -62,6 +62,23 @@ describe('handle events', () => {
         path: jasmine.stringMatching('/bar'),
       }));
     });
+
+    it('does correctly cache options', () => {
+      const cfg     = {
+        host: 'generic',
+        __groupMap: {
+          specific: {
+            host: 'specific',
+          },
+        },
+      };
+
+      const optionsSpecific = handler.buildHttpOptions(cfg, 'specific', 0);
+      const optionsGeneric = handler.buildHttpOptions(cfg, 'generic', 0);
+
+      expect(optionsSpecific.hostname).toEqual('specific');
+      expect(optionsGeneric.hostname).toEqual('generic');
+    });
   });
 
   describe('parse events', () => {

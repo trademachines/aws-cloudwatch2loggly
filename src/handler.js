@@ -13,7 +13,7 @@ const buildHttpOptions = (cfg, group, contentLength) => {
       ? cfg.__groupMap[group]
       : {};
     groupCfg     = groupCfg ? groupCfg : {};
-    groupCfg     = Object.assign(cfg, groupCfg);
+    groupCfg     = Object.assign({}, cfg, groupCfg);
 
     httpOptions[group] = {
       hostname: groupCfg.host,
