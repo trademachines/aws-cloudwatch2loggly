@@ -81,43 +81,6 @@ describe('handle events', () => {
     });
   });
 
-  describe('parse events', () => {
-    it('creates event', () => {
-      const myEvent = Object.assign(event, {message: 'foobar'});
-
-      handler.parseLogEvent('group', 'stream', myEvent, (err, ev) => {
-        expect(ev).toEqual(jasmine.objectContaining({
-          timestamp: jasmine.any(String),
-          message: 'foobar',
-          logGroup: 'group',
-          logStream: 'stream',
-        }));
-      });
-    });
-
-    it('trims messages', () => {
-      const myEvent = Object.assign(event, {message: 'foobar     '});
-
-      handler.parseLogEvent('', '', myEvent, (err, ev) => {
-        expect(ev).toEqual(jasmine.objectContaining({
-          message: 'foobar',
-        }));
-      });
-    });
-
-    it('adds some more infos for docker stream names', () => {
-      const stream = 'prefix/container/id';
-
-      handler.parseLogEvent('group', stream, event, (err, ev) => {
-        expect(ev).toEqual(jasmine.objectContaining({
-          dockerPrefix: 'prefix',
-          dockerContainer: 'container',
-          dockerTaskId: 'id',
-        }));
-      });
-    });
-  });
-
   it('sends line messages to loggly', (done) => {
     const events = [{event: 1}, {event: 2}];
     const loggly = nock('http://domain.com')

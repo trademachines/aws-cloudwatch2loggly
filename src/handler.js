@@ -1,9 +1,10 @@
 'use strict';
 
-const _     = require('lodash');
-const async = require('neo-async');
-const zlib  = require('zlib');
-const http  = require('http');
+const _           = require('lodash');
+const async       = require('neo-async');
+const zlib        = require('zlib');
+const http        = require('http');
+const eventParser = require('./event-parser');
 
 let httpOptions = {};
 
@@ -31,25 +32,6 @@ const buildHttpOptions = (cfg, group, contentLength) => {
   current.headers['Content-Length'] = contentLength;
 
   return current;
-};
-
-const parseLogEvent = (group, stream, rawEvent, cb) => {
-  let event = {
-    timestamp: new Date(rawEvent.timestamp).toISOString(),
-    message: rawEvent.message.trim(),
-    logGroup: group,
-    logStream: stream,
-  };
-
-  if (stream.includes('/')) {
-    const parts = stream.split('/', 3);
-
-    event.dockerPrefix    = parts[0];
-    event.dockerContainer = parts[1];
-    event.dockerTaskId    = parts[2];
-  }
-
-  cb(null, event);
 };
 
 const httpRequest = (options, data, cb) => {
@@ -94,7 +76,7 @@ module.exports = (err, cfg, event, context, cb) => {
       (parsed, cb) => {
         async.map(
           parsed.logEvents,
-          _.partial(parseLogEvent, parsed.logGroup, parsed.logStream),
+          _.partial(eventParser, parsed.logGroup, parsed.logStream),
           (err, events) => {
             cb(err, {group: parsed.logGroup, events: events});
           }
@@ -117,6 +99,5 @@ module.exports = (err, cfg, event, context, cb) => {
 module.exports.reset            = () => {
   httpOptions = {};
 };
-module.exports.parseLogEvent    = parseLogEvent;
 module.exports.sendToLoggly     = sendToLoggly;
 module.exports.buildHttpOptions = buildHttpOptions;
