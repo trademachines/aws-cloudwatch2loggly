@@ -27,7 +27,9 @@ for communicating with Loggly.
 {
   "host": "logs-01.loggly.com",
   "tags": "production,cloudwatch2loggly",
-  "token": "ENC[KMS,...]",
+  "token": {
+    "secure": "..."
+  },
   "__groupMap": {
     "different-log-group-name": {
       "tags": "staging,cloudwatch2loggly"
