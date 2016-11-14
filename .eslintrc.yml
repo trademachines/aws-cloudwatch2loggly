@@ -3,3 +3,4 @@ parserOptions:
   ecmaVersion: 6
 rules:
   no-multi-spaces: off
+  comma-dangle: off
