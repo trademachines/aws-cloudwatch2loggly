@@ -1,35 +1,40 @@
 'use strict';
 
-const async         = require('neo-async');
-const _             = require('lodash');
-const encodingRegex = /^ENC\[([^,]+),(.*)\]$/;
+const async = require('neo-async');
+const _     = require('lodash');
 
 let cachedConfig;
 
-const resolve = (kms, cfg, cb) => {
-  let matches;
+const getSecuredValue = (obj) => {
+  const keys = Object.keys(obj);
+  if (1 === keys.length && 'secure' === keys[0]) {
+    return obj.secure;
+  }
+};
 
+const resolve = (kms, cfg, cb) => {
   switch (true) {
     case _.isArray(cfg):
       async.map(cfg, _.partial(resolve, kms), cb);
       break;
-    case _.isObject(cfg):
-      async.mapValues(cfg, (v, k, cb) => resolve(kms, v, cb), cb);
-      break;
-    case _.isString(cfg) && (null != (matches = cfg.match(encodingRegex))):
-      // don't distinguish by type, we assume its KMS
-      // const type    = matches[ 1 ];
-      const params = {
-        CiphertextBlob: new Buffer(matches[2], 'base64'),
-      };
+    case _.isPlainObject(cfg):
+      let securedValue;
 
-      kms.decrypt(params, (err, data) => {
-        if (err) {
-          return cb(err);
-        }
+      if (securedValue = getSecuredValue(cfg)) {
+        const params = {
+          CiphertextBlob: new Buffer(securedValue, 'base64'),
+        };
 
-        return cb(null, data.Plaintext.toString('ascii'));
-      });
+        kms.decrypt(params, (err, data) => {
+          if (err) {
+            return cb(err);
+          }
+
+          return cb(null, data.Plaintext.toString('ascii'));
+        });
+      } else {
+        async.mapValues(cfg, (v, k, cb) => resolve(kms, v, cb), cb);
+      }
       break;
     default:
       cb(null, cfg);

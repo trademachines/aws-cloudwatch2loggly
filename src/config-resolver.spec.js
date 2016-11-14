@@ -24,11 +24,20 @@ describe('resolve config', () => {
     const encryptedCfg = {
       one: '1',
       two: 2,
-      three: 'ENC[KMS,encrypted]',
-      four: ['ENC[KMS,encrypted]', ['ENC[KMS,encrypted]']],
+      three: {
+        secure: 'encrypted',
+      },
+      four: [
+        {secure: 'encrypted'},
+        [{secure: 'encrypted'}]
+      ],
       five: {
-        nestedOne: 'ENC[KMS,encrypted]',
-        nestedTwo: ['ENC[KMS,encrypted]'],
+        nestedOne: {
+          secure: 'encrypted',
+        },
+        nestedTwo: [{
+          secure: 'encrypted',
+        }],
       },
       six: true,
     };
