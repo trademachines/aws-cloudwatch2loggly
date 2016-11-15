@@ -7,37 +7,23 @@ describe('parse events', () => {
   };
 
   it('creates event', () => {
-    const myEvent = Object.assign({}, event, {message: 'foobar'});
+    const myEvent     = Object.assign({}, event, {message: 'foobar'});
+    const parsedEvent = parser('group', 'stream', myEvent);
 
-    parser('group', 'stream', myEvent, (err, ev) => {
-      expect(ev).toEqual(jasmine.objectContaining({
-        timestamp: jasmine.any(String),
-        message: 'foobar',
-        logGroup: 'group',
-        logStream: 'stream',
-      }));
+    expect(parsedEvent).toEqual({
+      timestamp: jasmine.any(String),
+      message: 'foobar',
+      logGroup: 'group',
+      logStream: 'stream',
     });
   });
 
   it('trims messages', () => {
-    const myEvent = Object.assign({}, event, {message: 'foobar     '});
+    const myEvent     = Object.assign({}, event, {message: 'foobar     '});
+    const parsedEvent = parser('group', 'stream', myEvent);
 
-    parser('', '', myEvent, (err, ev) => {
-      expect(ev).toEqual(jasmine.objectContaining({
-        message: 'foobar',
-      }));
-    });
-  });
-
-  it('adds some more infos for docker stream names', () => {
-    const stream = 'prefix/with/slashes/container/id';
-
-    parser('group', stream, event, (err, ev) => {
-      expect(ev).toEqual(jasmine.objectContaining({
-        dockerPrefix: 'prefix/with/slashes',
-        dockerContainer: 'container',
-        dockerTaskId: 'id',
-      }));
-    });
+    expect(parsedEvent).toEqual(jasmine.objectContaining({
+      message: 'foobar'
+    }));
   });
 });
