@@ -1,4 +1,4 @@
-# AWS Cloudwatch2Loggly
+# AWS Cloudwatch2Loggly [![Build Status](https://travis-ci.org/trademachines/aws-cloudwatch2loggly.svg?branch=master)](https://travis-ci.org/trademachines/aws-cloudwatch2loggly)  [![Coverage Status](https://coveralls.io/repos/github/trademachines/aws-cloudwatch2loggly/badge.svg?branch=master)](https://coveralls.io/github/trademachines/aws-cloudwatch2loggly?branch=master)
 
 ## Intention
 Inspired by [cloudwatch2loggly](https://github.com/varshneyjayant/cloudwatch2loggly) we developed
