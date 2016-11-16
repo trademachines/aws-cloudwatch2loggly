@@ -3,6 +3,7 @@
   "description": "Forwards messages from Cloudwatch to Loggly",
   "license": "MIT",
   "devDependencies": {
+    "coveralls": "^2.11.15",
     "eslint": "^3.9.1",
     "eslint-config-google": "^0.7.0",
     "istanbul": "^0.4.5",
