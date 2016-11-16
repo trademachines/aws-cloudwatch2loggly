@@ -15,30 +15,30 @@ describe('handle events', () => {
     };
   });
 
-  describe('build http options', () => {
+  describe('build configs', () => {
     it('uses host from config', () => {
-      const cfg     = {host: 'some.url.com'};
-      const options = handler.buildHttpOptions(cfg, 'none', 0);
+      const cfg    = {host: 'some.url.com'};
+      const groupConfig = handler.getGroupConfig(cfg, 'none');
 
-      expect(options).toEqual(jasmine.objectContaining({
+      expect(groupConfig.http).toEqual(jasmine.objectContaining({
         hostname: 'some.url.com',
       }));
     });
 
     it('uses token from config', () => {
       const cfg     = {token: 'secret-token'};
-      const options = handler.buildHttpOptions(cfg, 'none', 0);
+      const groupConfig = handler.getGroupConfig(cfg, 'none');
 
-      expect(options).toEqual(jasmine.objectContaining({
+      expect(groupConfig.http).toEqual(jasmine.objectContaining({
         path: jasmine.stringMatching('/secret-token/'),
       }));
     });
 
     it('uses tags from config', () => {
       const cfg     = {tags: 'foo'};
-      const options = handler.buildHttpOptions(cfg, 'none', 0);
+      const groupConfig = handler.getGroupConfig(cfg, 'none');
 
-      expect(options).toEqual(jasmine.objectContaining({
+      expect(groupConfig.http).toEqual(jasmine.objectContaining({
         path: jasmine.stringMatching('/foo'),
       }));
     });
@@ -55,16 +55,16 @@ describe('handle events', () => {
           },
         },
       };
-      const options = handler.buildHttpOptions(cfg, 'specific', 0);
+      const groupConfig = handler.getGroupConfig(cfg, 'specific');
 
-      expect(options).toEqual(jasmine.objectContaining({
+      expect(groupConfig.http).toEqual(jasmine.objectContaining({
         hostname: 'specific',
         path: jasmine.stringMatching('/bar'),
       }));
     });
 
     it('does correctly cache options', () => {
-      const cfg     = {
+      const cfg = {
         host: 'generic',
         __groupMap: {
           specific: {
@@ -73,11 +73,11 @@ describe('handle events', () => {
         },
       };
 
-      const optionsSpecific = handler.buildHttpOptions(cfg, 'specific', 0);
-      const optionsGeneric = handler.buildHttpOptions(cfg, 'generic', 0);
+      const groupConfigSpecific = handler.getGroupConfig(cfg, 'specific', 0);
+      const groupConfigGeneric  = handler.getGroupConfig(cfg, 'generic', 0);
 
-      expect(optionsSpecific.hostname).toEqual('specific');
-      expect(optionsGeneric.hostname).toEqual('generic');
+      expect(groupConfigSpecific.http.hostname).toEqual('specific');
+      expect(groupConfigGeneric.http.hostname).toEqual('generic');
     });
   });
 

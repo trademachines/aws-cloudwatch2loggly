@@ -5,29 +5,36 @@ const async       = require('neo-async');
 const zlib        = require('zlib');
 const http        = require('http');
 const eventParser = require('./event-parser');
+const behaviours  = require('./behaviour');
 
-let httpOptions = {};
+let groupConfigs = {};
 
-const buildHttpOptions = (cfg, group, contentLength) => {
-  if (!httpOptions[group]) {
-    let groupCfg = !!cfg.__groupMap
-      ? cfg.__groupMap[group]
-      : {};
-    groupCfg     = groupCfg ? groupCfg : {};
-    groupCfg     = Object.assign({}, cfg, groupCfg);
+const getGroupConfig = (cfg, group) => {
+  if (!groupConfigs[group]) {
+    const groupCfg = Object.assign(
+      {}, cfg,
+      _.get(cfg, `__groupMap.${group}`, {})
+    );
 
-    httpOptions[group] = {
-      hostname: groupCfg.host,
-      path: `/bulk/${groupCfg.token}/tag/${encodeURIComponent(groupCfg.tags)}`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': contentLength,
-      },
+    groupConfigs[group] = {
+      behaviour: groupCfg.behaviour,
+      http: {
+        hostname: groupCfg.host,
+        path: `/bulk/${groupCfg.token}/tag/${encodeURIComponent(
+          groupCfg.tags)}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      }
     };
   }
 
-  let current = Object.assign({}, httpOptions[group]);
+  return groupConfigs[group];
+};
+
+const buildHttpOptions = (cfg, group, contentLength) => {
+  let current = Object.assign({}, getGroupConfig(cfg, group)).http;
 
   current.headers['Content-Length'] = contentLength;
 
@@ -65,25 +72,35 @@ module.exports = (err, cfg, event, context, cb) => {
     return cb(err);
   }
 
+  const unzipped    = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
+  const parsed      = JSON.parse(unzipped.toString('ascii'));
+  const eventConfig = getGroupConfig(cfg, parsed.logGroup);
+  let parsers       = [eventParser];
+
+  if (_.has(behaviours, eventConfig.behaviour)) {
+    parsers.push(behaviours[eventConfig.behaviour]);
+  }
+
+  parsers = _.map(parsers,
+    (p) => _.partial(p, parsed.logGroup, parsed.logStream)
+  );
+
   async.waterfall([
       (cb) => {
-        cb(null, new Buffer(event.awslogs.data, 'base64'));
-      },
-      zlib.gunzip,
-      (parsed, cb) => {
-        cb(null, JSON.parse(parsed.toString('ascii')));
-      },
-      (parsed, cb) => {
         async.map(
           parsed.logEvents,
-          _.partial(eventParser, parsed.logGroup, parsed.logStream),
-          (err, events) => {
-            cb(err, {group: parsed.logGroup, events: events});
-          }
+          (ev, cb) => {
+            async.reduce(
+              parsers, {},
+              (memo, p, cb) => cb(null, Object.assign(memo, p(ev))),
+              cb
+            );
+          },
+          cb
         );
       },
-      (parsed, cb) => {
-        sendToLoggly(cfg, parsed.group, parsed.events, cb);
+      (events, cb) => {
+        sendToLoggly(cfg, parsed.logGroup, events, cb);
       },
     ],
     (err) => {
@@ -97,7 +114,8 @@ module.exports = (err, cfg, event, context, cb) => {
 };
 
 module.exports.reset            = () => {
-  httpOptions = {};
+  groupConfigs = {};
 };
 module.exports.sendToLoggly     = sendToLoggly;
 module.exports.buildHttpOptions = buildHttpOptions;
+module.exports.getGroupConfig   = getGroupConfig;
