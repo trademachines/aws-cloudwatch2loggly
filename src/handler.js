@@ -73,7 +73,16 @@ module.exports = (err, cfg, event, context, cb) => {
   }
 
   const unzipped    = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
-  const parsed      = JSON.parse(unzipped.toString('ascii'));
+  const json        = unzipped.toString('ascii');
+  let parsed;
+
+  try {
+    parsed      = JSON.parse(json);
+  } catch (e) {
+    console.log(`Can not parse JSON from ${json}`);
+    return cb(e);
+  }
+
   const eventConfig = getGroupConfig(cfg, parsed.logGroup);
   let parsers       = [eventParser];
 

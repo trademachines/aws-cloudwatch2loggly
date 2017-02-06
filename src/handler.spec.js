@@ -81,6 +81,24 @@ describe('handle events', () => {
     });
   });
 
+  it('catches json.parse errors', (done) => {
+    const payload = {
+      awslogs: {
+        data: zlib.gzipSync(new Buffer('{', 'ascii')).toString('base64'),
+      },
+    };
+
+    handler(null, {host: 'domain.com'}, payload, null, (err) => {
+      if (!err) {
+        done.fail('');
+      }
+
+      expect(err).toBeDefined();
+
+      done();
+    });
+  });
+
   it('sends line messages to loggly', (done) => {
     const events = [{event: 1}, {event: 2}];
     const loggly = nock('http://domain.com')
