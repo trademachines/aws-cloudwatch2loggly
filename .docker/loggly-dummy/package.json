@@ -1,0 +1,11 @@
+{
+  "name": "loggly-dummy",
+  "description": "",
+  "devDependencies": {
+  },
+  "dependencies": {
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

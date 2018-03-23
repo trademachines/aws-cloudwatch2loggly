@@ -1,24 +1,64 @@
 language: node_js
 node_js:
-- '4.3'
-after_success:
-- npm run coveralls
+  - '8.10'
+
+services:
+  - docker
+
+cache:
+  yarn: true
+  directories:
+    - node_modules
+
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s
+  - export PATH="$HOME/.yarn/bin:$PATH"
+
+script:
+  - docker-compose run cloudwatch2loggly npm t
+  - npm run dist
+
 before_deploy:
-- npm prune --production
+  - cd build
+
 deploy:
-  provider: lambda
-  function_name: cloudwatch2loggly
-  description: Consume cloudwatch log groups and forward them to Loggly
-  module_name: index
-  handler_name: handle
-  role: arn:aws:iam::608300940987:role/lambda-cloudwatch2loggly
-  runtime: nodejs4.3
-  memory_size: 128
-  timeout: 120
-  region: eu-west-1
-  access_key_id:
-    secure: Ze+leZKpXairLUYLFoRB2MmgMr5gBLCJUfkXj4pG2LJstQDUxJvIufLx+8cSLwWbchq0U+LJENktWKrGrdvpBZujWZiYEBDp9r+3sVA+QGLijwH6/hLcGr/gJaMYFvfGAg/M2qvnlPyMmP2kqF6te8D3PPXG9OwGZuIvGV8g8ojx716RCqoQId051DCDwNhNartWTwzizhjRkWDq4q5gqUKDSdufv8iH+QwRI2Xs6MMVFp8iky/7vr5wWSgYMq9cMSb7sSZlP90mOcpsL4HKGyRhY+A3v0cE0AniEqQjc4fd5SY52893YPDIJxUfFAzMlJmpaRP9W1H0KwnvTe1siyxXkNNmfcViQ7YtdFwm18jle8xFkAgFw64w4/qKFv5UNlsSJQSh75YRbKaNVPwDQ9NUYUVkLIzX/vLnbq0tPedQhwpuzT1U7umUIpxM5jC4+EkBQI6JWUefz6YBNGNy+AfT+T9rTcVEKUKFUz0eYy5SrFi8KCri6Eb5JR+eu4UJ9uSsO0AE+gn89h5AtS/5tgKWHc1zeDaS9cHFMTWXUS7u36us0m2VwhDQcEUF9K/3SUrKwU+M+Ejci9xhNkEET1l2UDJfwHA5aiA1AaiW+i3sbh9d63JuOybPK1GUu+elJao1eNFgps8ZJ58qMKcYyhn1z+aWr4rKKLewgMKWQrg=
-  secret_access_key:
-    secure: jA8HnWxA+4iKD6h5e2FnK9OHPqkzeeOSMPOzGzv10HV+8J4/l5seRvRdHNA4zYoFnMK5sxx2u8YgR4kq3/Ik33Wf4MWXBEFlcyPoxiZtldNEUKfYQz1jy9OJRDl6NJJ5onMkpk7IGBGajVlE193o3dsiCKQN8BCSHJnO3lo7VLrFIeKDYfMK3r8VE7DG1rNf8IYIkQN/EU0D/5I2YB4UlzvbK0xQWqT3Hhj3qGlEzwoF8puvxxp5gEGUo2ArpJXHaYEXiAdidSL1BeM8eJUoKWNK2IGDm4urvJBbX8uJyOqdW3mmDKPYj1y/1ek0UyBJOo1FxPhaTyavVStsU6m9X/TXxJjhLm2EIjGlZLXY+CuEVCSqoIrGFLhhoBpJrjavK9yTfChAgA1fqom7mtXFAs9z278couE8fYq2G5WOy9xEIIi6uepfvkMvnlGxqt9ekCwEwIbajZfB2h5ea+lndUmEuLjneMGfLLE0tX6OKeGP7uXol/flhWrY5djeWWBY/VmgI+s0WoG/u3Jg0W7zY9OBMgzxjN4eAVlg3y0W4HPVaPCsp1UHLq9kWQdyS0gVLFUla2TBmSsXSxCC+m39aXQqqCUOuSVCSfcYcEfY7jsZFo87uEZvqeU5JxSL1R2azhujadA3z0t2Ai2MHSTKqL9ZX/l1zqyirjuKUaWUjHg=
-  on:
-    branch: master
+  -
+    provider: lambda
+    function_name: stg-cloudwatch2loggly
+    module_name: src/index
+    handler_name: handle
+    role:
+      secure: "aFBDpaIB+aZm4IpVBMAvG8hYhXFJOuYPt8vX8Usw2S7JSuXQeHhkaxusJy2w2GJpBilQSpOMp2X72i1XvQ54jNRW+361TBgCf6SSFV51xzMgguGdH8MRZAeGAJv8LT+KeasmVz8j/DgduvUcYcieMzgt204T0cXrYthRgH2Ifgj2uQ5eRySxcvYNuvbhcSkSYqoTkMMGie5vBZ/u0Jz/IcYxtlp3XCJX9aW5fLQ9Ln/gEOQrB0uHEDgYoYsctt/e1Uk3hqpapZ36W1rigyfWXHsGQpqy4NRzc4zmMwKkuoNqBcBZ95Xv9SN84vZ9CHFbhXhmoxWFBMX4RXVCzDW2t4hLBC3mVssKji8qk+ha1EiRzVEqMD8bK20FcIJZPPpyKRY1xDVYDTFUxIohTrvUYAclvh+Z69mT93tHzp+rcARvupwlL8YFj01MvDovmPqUHacaYb+z/ncCFe1eS8UDJU2FuyRYfwDztq8qlzdvmPrd/WT4VKML6VKCgyw6oAbYAI5JldIS0pbEDKcMViiHbVBabPYK0p1Kx2BxRUMJD17SXD+5rc8qb2pNFDZgxH/PYetq86swlDC8UjjuJn4G356RdytzvGc8szu3IBkQcIoM1Y+M35jFejUV7QDcVQ2/B7CoFE20bM9HLxmWILm82dpgzdR/a54Zwi+2S9sHR4Q="
+    runtime: nodejs6.10
+    memory_size: 128
+    timeout: 10
+    region: eu-west-1
+    skip_cleanup: true
+    access_key_id:
+      secure: "ZB8hXhxmW/8UMsIuaf0HT7nzVFxj18RpNHWpnjYXU6b2X3x6/G5BagoU/7XO5VoZLckXhIE2bnJHvTiWdv992Asp+JxAqvRudmuFbRHV3eVkoSQb5wDzmSaJ75CZ+/1xQ3C3bZmli9/H8sfDKXcJAaWpe+u41OaEqaaYMaum2c1HicCd85sJ9pK2FH9OxMdTLGaQdOo/th9SJjG0mCUq5J5sr75Brwa+LVLRMLPz1FRoqpJBNZ5htB1Yi7iE8KPa/sJ6PfPcQRZ1jQvt4vY0S75LKaaUFVqXzt6WnDP5UZ8yrjPh/veuWIAxHoCwh9H8HwoBptTk2VzUygUkX2rbHP1XvKqA8d9Umr1XgztlarZc/YUfDrrlBSpWUI1s+/O/mZA7PfhwR85E6pbSIPTi17ECUQdOrfpxk54hPYXUqtFFBFQ7XcYVuXNlMycime/blU6M9SDu4aaLzfxDlkiU4/8Jgnq3TnjU0Os+2eMP6QHIHTnhbXJN/2aVFhxhje4gXM+1sg77ygvCXHjt9YzHCI/1mZHIJIn8F5JHJ4opSUceF7sppftZ/TEsYb3k82yo0i+ZQYaeZFKIiHP2taWR8xAp9OhCpjnyVB4uMbEJ+3/Md9szX/JZIk5VIRmzMFMRylUBGnURRscmCeewlO7aqryEiOBzDhx9siumO/nf+2A="
+    secret_access_key:
+      secure: "CPV5RvKVpI/UxNnMzTPB6hMPYKdNhyq8c2hb6S7Ehp5I5DP7TbHishTPtng8MleAd1XscRIbC5gn+lZ2TXmkPYNQ8XV0/H6/rJJDKA3OPw+uyGRrk0NhhzyGnV6MK1pNZqQ9YvNQcTAOY6571WkSCx11YxjnCs1hPVgcVU9LaSHYeYSpvi/LBtZ6hIhyjrFWlxo0ECHhlsjfybYkOCDIYieKi0gMrvdokeQpcQcmHrFu5nkAdgH5Jw8/eRUIcQyQv5oTF3feJ/4vXdRBiUjh02tkcQ78jyHlKB3K7FtDTBf2pqyczlaMbJxLLl0s6DB1zgHe85p9wfoG6g/zsRZ0/5I2+EW7cBiTKRwJnNC+pwa+HlwD5FP7RCqki7ECKNcABf2BssG/lTM74AZ4tnDbsdolYAx/omMqrxOH/SFinEB+DuHwyMhgH2DHZt2rIWyswfpLSFKmxuRgdSGioA3GGDo2i4D5dUpPD0sXDb42ZvSCrgJM+eXBkWxTXICsGr90LY6Ysku9gQ5bYOc8/nJMgF9ZeLInA8b4OCU7O/2sABjZUbwgta3wzhWhuuqkfNytiMS8ryOd4Mof66R9+NYcyo2z9VHadjnET710+gUH9n2hn2Sb0cV1XYmpQMP3a71H4Wy7bA7+Z6nvxwAiAjp5optBfcFQz2coCayGbhcDx0I="
+    on:
+      branch: stage
+  -
+    provider: lambda
+    function_name: prd-cloudwatch2loggly
+    module_name: src/index
+    handler_name: handle
+    role:
+      secure: "fRPdfjRIHETIV2gsA+iCgFcMyvgV6cBACrsFveMjoyppwPjb7HDpHNvP0WNHYT8rRVt+0XPbdGHJvZKC887TZaVRsnvbVY+8CF/qKDryrpvEd1W/k69O4EUQU2fZTtsVNCHIn9vfJWXVGWX1wcbFrp8eqhtDAZRTlVhPlPtxsFvNmsT0Hjt30WuuLg3fEXokB7WTFZQPTM7coMd5chqExisStpoyBb0QxN/JkQ0eMUKCm2H0WosVF8cjYMVitNL+eA9c2lv8k+7Mrlh/dWgK66EP7QSvA2mO1FFJf0r2yUIHLCmqiJq7zigUbjQHpwS6kDNueF1AXk8wNo4KT04bH+1yr/TOX9nlF/RDteneVkNP9FvQFXT3ZUQb+wsiA2L6HCXMsNGN9XUpcywW8K+fmksjbF1b926b1I/2MYDLCbRKk2BVXIy2UVPZWEOyaYpv0arlMBu+C9VO4qrkNbxY52CWzxor+sQkVolny+JEAz+65kPTE6HDeyw508rdqSA2ZvxjeJ8WrTFxnzdX9oroy0lEcfvrZjMtdS1gT2G46qbEDQ8QZbGhui+rV16ITiC49Xgy55LiIGpwCDzS9IbwdNH1Qdc7tRzVqdack1o2GBAwoVGZad6XfZvPQFe8NwIsAYKzaJkAcb4FboH2ER4uk2rpurwieI06JKfzeHCZN1Y="
+    runtime: nodejs6.10
+    memory_size: 128
+    timeout: 10
+    region: eu-west-1
+    skip_cleanup: true
+    access_key_id:
+      secure: "ZB8hXhxmW/8UMsIuaf0HT7nzVFxj18RpNHWpnjYXU6b2X3x6/G5BagoU/7XO5VoZLckXhIE2bnJHvTiWdv992Asp+JxAqvRudmuFbRHV3eVkoSQb5wDzmSaJ75CZ+/1xQ3C3bZmli9/H8sfDKXcJAaWpe+u41OaEqaaYMaum2c1HicCd85sJ9pK2FH9OxMdTLGaQdOo/th9SJjG0mCUq5J5sr75Brwa+LVLRMLPz1FRoqpJBNZ5htB1Yi7iE8KPa/sJ6PfPcQRZ1jQvt4vY0S75LKaaUFVqXzt6WnDP5UZ8yrjPh/veuWIAxHoCwh9H8HwoBptTk2VzUygUkX2rbHP1XvKqA8d9Umr1XgztlarZc/YUfDrrlBSpWUI1s+/O/mZA7PfhwR85E6pbSIPTi17ECUQdOrfpxk54hPYXUqtFFBFQ7XcYVuXNlMycime/blU6M9SDu4aaLzfxDlkiU4/8Jgnq3TnjU0Os+2eMP6QHIHTnhbXJN/2aVFhxhje4gXM+1sg77ygvCXHjt9YzHCI/1mZHIJIn8F5JHJ4opSUceF7sppftZ/TEsYb3k82yo0i+ZQYaeZFKIiHP2taWR8xAp9OhCpjnyVB4uMbEJ+3/Md9szX/JZIk5VIRmzMFMRylUBGnURRscmCeewlO7aqryEiOBzDhx9siumO/nf+2A="
+    secret_access_key:
+      secure: "CPV5RvKVpI/UxNnMzTPB6hMPYKdNhyq8c2hb6S7Ehp5I5DP7TbHishTPtng8MleAd1XscRIbC5gn+lZ2TXmkPYNQ8XV0/H6/rJJDKA3OPw+uyGRrk0NhhzyGnV6MK1pNZqQ9YvNQcTAOY6571WkSCx11YxjnCs1hPVgcVU9LaSHYeYSpvi/LBtZ6hIhyjrFWlxo0ECHhlsjfybYkOCDIYieKi0gMrvdokeQpcQcmHrFu5nkAdgH5Jw8/eRUIcQyQv5oTF3feJ/4vXdRBiUjh02tkcQ78jyHlKB3K7FtDTBf2pqyczlaMbJxLLl0s6DB1zgHe85p9wfoG6g/zsRZ0/5I2+EW7cBiTKRwJnNC+pwa+HlwD5FP7RCqki7ECKNcABf2BssG/lTM74AZ4tnDbsdolYAx/omMqrxOH/SFinEB+DuHwyMhgH2DHZt2rIWyswfpLSFKmxuRgdSGioA3GGDo2i4D5dUpPD0sXDb42ZvSCrgJM+eXBkWxTXICsGr90LY6Ysku9gQ5bYOc8/nJMgF9ZeLInA8b4OCU7O/2sABjZUbwgta3wzhWhuuqkfNytiMS8ryOd4Mof66R9+NYcyo2z9VHadjnET710+gUH9n2hn2Sb0cV1XYmpQMP3a71H4Wy7bA7+Z6nvxwAiAjp5optBfcFQz2coCayGbhcDx0I="
+    on:
+      branch: master
+
+notifications:
+  slack:
+    secure: NI8SM3NQrmjHL7w5bhjOI833TZNOT/4IhJfRssV2DIqQ4IS8u4Mhv/17myH2dyRzJMPC7hZf8GXTQmJC33SF86bqDI8/SVmSfugsckIYe/KwFJjlogW3K5IzxCMAYxy5SlqL+2wf7yQUNep+jmD4FpXWa9mwialgXETAoT867Bayr4qZUEUu+t8Ur1afeOGhGxuQW5zIx2uoCu96PlMqfFrGCbZ93FVFuq23Uz7OsWajtoyVlGk0JZijIL0D+NaGuqpn1spQDK2vAYMljjk69uemI3DeMWMbtsPXX2nsGnxb24g3AvUeKDTJ2oFHN1QSG4fjUs0V8x9DjZjVCwDaQUFZtUZqaXBqFfBVnNY53xsitEiD+C6NNmsFP/UooE4lQAdL1AyFMaWupFw2mJfXoaxEWV6zZceiv4QNYySKG72qXXrD7+yMX3yaHg+Op/ORU02g1Vziv4FxdVXckuJvtbeiXXu61y7gp0McvnOcLzdNi4of2cx1QTTyzZdNFS/jum/WqWsN/81ZB32QGChjjRaMFvQYjI/fA+/NcpfkkLLSUUxNHJvbX0Zn5zvIpLjpwnb+IXC9xyJnCOcziFBogYpvFmnoxEsKItiAsxXC710stS6nPpS+bGYf2HuFzCRq2dtzZ4BnoyofI42Xu3ae4VnGnEAbXk9l6E0t7ZWaaOw=
