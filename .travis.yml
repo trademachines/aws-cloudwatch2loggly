@@ -25,7 +25,7 @@ deploy:
   -
     provider: lambda
     function_name: stg-cloudwatch2loggly
-    module_name: index
+    module_name: src/index
     handler_name: handle
     role:
       secure: "aFBDpaIB+aZm4IpVBMAvG8hYhXFJOuYPt8vX8Usw2S7JSuXQeHhkaxusJy2w2GJpBilQSpOMp2X72i1XvQ54jNRW+361TBgCf6SSFV51xzMgguGdH8MRZAeGAJv8LT+KeasmVz8j/DgduvUcYcieMzgt204T0cXrYthRgH2Ifgj2uQ5eRySxcvYNuvbhcSkSYqoTkMMGie5vBZ/u0Jz/IcYxtlp3XCJX9aW5fLQ9Ln/gEOQrB0uHEDgYoYsctt/e1Uk3hqpapZ36W1rigyfWXHsGQpqy4NRzc4zmMwKkuoNqBcBZ95Xv9SN84vZ9CHFbhXhmoxWFBMX4RXVCzDW2t4hLBC3mVssKji8qk+ha1EiRzVEqMD8bK20FcIJZPPpyKRY1xDVYDTFUxIohTrvUYAclvh+Z69mT93tHzp+rcARvupwlL8YFj01MvDovmPqUHacaYb+z/ncCFe1eS8UDJU2FuyRYfwDztq8qlzdvmPrd/WT4VKML6VKCgyw6oAbYAI5JldIS0pbEDKcMViiHbVBabPYK0p1Kx2BxRUMJD17SXD+5rc8qb2pNFDZgxH/PYetq86swlDC8UjjuJn4G356RdytzvGc8szu3IBkQcIoM1Y+M35jFejUV7QDcVQ2/B7CoFE20bM9HLxmWILm82dpgzdR/a54Zwi+2S9sHR4Q="
