@@ -2,24 +2,50 @@
   "name": "aws-cloudwatch2loggly",
   "description": "Forwards messages from Cloudwatch to Loggly",
   "license": "MIT",
+  "scripts": {
+    "lambda-local": "lambda-local -l dev.js -t 10",
+    "clean": "rimraf coverage build tmp",
+    "build": "npm run lint && tsc -p tsconfig.json && copy src/_resources/**/* build/src/_resources",
+    "watch": "tsc -w -p tsconfig.json",
+    "lint": "tslint -t stylish '{src,spec,features}/*.{ts,tsx}'",
+    "pretest": "npm run lint",
+    "test:unit": "JASMINE_CONFIG_PATH=jasmine.json jasmine",
+    "test:acceptance": "node -r 'reflect-metadata' ./node_modules/.bin/cucumberjs --compiler ts:ts-node/register",
+    "test": "npm run test:unit && npm run test:acceptance",
+    "test:ci": "npm run clean && npm test",
+    "test:watch": "nodemon --config nodemon.test.json",
+    "dist": "npm run build && yarn install --production --modules-folder ./build/node_modules"
+  },
   "devDependencies": {
-    "coveralls": "^2.11.15",
-    "eslint": "^3.9.1",
-    "eslint-config-google": "^0.7.0",
-    "istanbul": "^0.4.5",
-    "jasmine": "^2.5.2",
+    "@types/aws-lambda": "^0.0.33",
+    "@types/chai": "^4.0.0",
+    "@types/faker": "^4.1.1",
+    "@types/jasmine": "^2.5.51",
+    "@types/lodash": "^4.14.65",
+    "@types/nock": "^9.1.2",
+    "@types/node": "^8.9",
+    "@types/request": "^2.47.0",
+    "@types/request-promise-native": "^1.0.14",
+    "chai": "^4.0.2",
+    "copy": "^0.3.0",
+    "cucumber": "^2.3.1",
+    "faker": "^4.1.0",
+    "jasmine": "^2.6.0",
     "jasmine-spec-reporter": "^2.7.0",
-    "nock": "^9.0.2"
+    "lambda-local": "^1.4.6",
+    "nock": "^9.2.3",
+    "rimraf": "^2.6.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.6.0",
+    "typescript": "^2.4.0"
   },
   "dependencies": {
-    "aws-lambda-config": "0.0.1",
-    "aws-sdk": "^2.6.13",
-    "lodash": "^4.16.6",
-    "neo-async": "^2.0.1"
-  },
-  "scripts": {
-    "test": "JASMINE_CONFIG_PATH=jasmine.json node_modules/.bin/istanbul cover node_modules/.bin/jasmine",
-    "coveralls": "cat ./coverage/lcov.info | node_modules/.bin/coveralls && rm -rf ./coverage",
-    "posttest": "node_modules/.bin/eslint src/"
+    "aws-sdk": "^2.100.0",
+    "injection-js": "^2.1.0",
+    "lodash": "^4.17.4",
+    "reflect-metadata": "^0.1.10",
+    "request": "^2.85.0",
+    "request-promise-native": "^1.0.5",
+    "tslib": "~1.7.0"
   }
 }

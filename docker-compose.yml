@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  cloudwatch2loggly:
+    image: node:8.10-alpine
+    command: npm run dev
+    working_dir: /usr/share/app
+    volumes:
+      - ~/.cache/yarn:/root/.cache/yarn
+      - ./:/usr/share/app
+    links:
+      - loggly-dummy
+    env_file: config.env
+    environment:
+      CONFIG: |
+        {
+          "groups": [
+            {
+              "match": "^ecs",
+              "behaviour": "ecs",
+              "tags": ["development","cloudwatch2loggly"]
+            }
+          ]
+        }
+
+  loggly-dummy:
+    build: .docker/loggly-dummy
+    volumes:
+      - .docker/loggly-dummy/data/:/usr/share/app/data
+    ports:
+      - 80
