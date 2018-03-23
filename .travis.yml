@@ -16,7 +16,7 @@ before_install:
 
 script:
   - docker-compose run cloudwatch2loggly npm t
-  - docker-compose run cloudwatch2loggly npm run dist
+  - npm run dist
 
 before_deploy:
   - cd build
