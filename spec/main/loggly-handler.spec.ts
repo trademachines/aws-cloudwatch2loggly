@@ -1,8 +1,6 @@
-// const nock    = require('nock');
-// const zlib    = require('zlib');
-
 import * as zlib from 'zlib';
 import { LogglyHandler } from '../../src/main';
+import { StrategyCollection } from '../../src/main/strategies/collection';
 
 function logs(text: string) {
   return {
@@ -16,25 +14,26 @@ describe('handle events', () => {
   // let event;
   let configResolver;
   let config;
-  let eventParser;
   let sender;
-  let behaviour;
+  let strategy;
+  let collection;
   let handler: LogglyHandler;
 
   beforeEach(() => {
     configResolver = {
       resolve: () => config
     };
-    eventParser    = {
-      getData: jasmine.createSpy('eventParser.getData').and.returnValue({})
-    };
     sender         = {
       send: jasmine.createSpy('sender.send').and.returnValue(Promise.resolve())
     };
-    behaviour      = {
-      getData: jasmine.createSpy('behaviour.getData').and.returnValue({})
+    strategy       = {
+      name: 'test',
+      from: jasmine.createSpy('strategy.from').and.returnValue({})
     };
-    handler        = new LogglyHandler(configResolver, eventParser, sender, { test: behaviour });
+    collection     = new StrategyCollection();
+    collection.add(strategy);
+
+    handler = new LogglyHandler(configResolver, sender, collection);
   });
 
   it('catches json.parse errors', done => {
@@ -49,7 +48,7 @@ describe('handle events', () => {
       .then(done);
   });
 
-  it('calls parser and behaviour to get data', (done) => {
+  it('calls strategy to get data', (done) => {
     const payload = logs(JSON.stringify({
       logGroup:  'test-something',
       logEvents: [
@@ -65,8 +64,7 @@ describe('handle events', () => {
 
     handler.handle(payload)
       .then(() => {
-        expect(eventParser.getData).toHaveBeenCalled();
-        expect(behaviour.getData).toHaveBeenCalled();
+        expect(strategy.from).toHaveBeenCalled();
       })
       .then(done)
       .catch(done.fail);

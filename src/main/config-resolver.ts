@@ -1,11 +1,11 @@
 import { Inject, Injectable } from 'injection-js';
 import * as _ from 'lodash';
-import { Config } from './loggly-handler';
+import { Config, GroupConfig } from './loggly-handler';
 import * as tokens from './tokens';
 
 @Injectable()
 export class ConfigResolver {
-  protected resolved = {};
+  protected resolved: { [key: string]: GroupConfig } = {};
 
   constructor(@Inject(tokens.Config) protected config: Config) {
   }

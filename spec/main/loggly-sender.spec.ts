@@ -1,7 +1,7 @@
 import * as nock from 'nock';
 import { LogglySender } from '../../src/main/loggly-sender';
 
-describe('', () => {
+describe('sending data to loggly', () => {
   let sender: LogglySender;
 
   beforeEach(() => {

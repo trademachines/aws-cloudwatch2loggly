@@ -1,9 +1,9 @@
 import { Injector, Provider } from 'injection-js';
 import { HandlerToken } from '../lambda';
 import { ConfigResolver } from './config-resolver';
-import { EventParser } from './event-parser';
 import { LogglyHandler } from './loggly-handler';
 import { LogglySender } from './loggly-sender';
+import { bootstrap as strategyBootstrap, providers as strategyProviders } from './strategies';
 import * as tokens from './tokens';
 
 export function providers(): Provider[] {
@@ -25,9 +25,11 @@ export function providers(): Provider[] {
       provide:  HandlerToken,
       useClass: LogglyHandler
     },
-    EventParser, ConfigResolver, LogglySender
+    ConfigResolver, LogglySender,
+    ...strategyProviders()
   ];
 }
 
-export function bootstrap(_injector: Injector): void {
+export function bootstrap(injector: Injector): void {
+  strategyBootstrap(injector);
 }

@@ -1,22 +1,20 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
-import { Inject, Injectable } from 'injection-js';
-import * as _ from 'lodash';
+import { Injectable } from 'injection-js';
 import * as zlib from 'zlib';
-import { Behaviour } from '../behaviours';
-import * as behaviourTokens from '../behaviours/tokens';
 import { Handler } from '../lambda';
 import { ConfigResolver } from './config-resolver';
-import { EventParser } from './event-parser';
 import { LogglySender } from './loggly-sender';
+import { DefaultStrategyIdentifier } from './strategies';
+import { StrategyCollection } from './strategies/collection';
 
 export type Event = CloudWatchLogsEvent | any;
 
-export type GroupParsingBehaviour = 'ecs';
+export type GroupStrategy = string;
 
 export type GroupConfig = {
   match: string;
   tags: string[];
-  behaviour?: GroupParsingBehaviour;
+  strategy?: GroupStrategy;
 }
 
 export type Config = {
@@ -26,24 +24,28 @@ export type Config = {
 @Injectable()
 export class LogglyHandler implements Handler<Event> {
   constructor(private configResolver: ConfigResolver,
-              private eventParser: EventParser,
               private sender: LogglySender,
-              @Inject(behaviourTokens.AllBehaviours) private behaviours: { [key: string]: Behaviour }) {
+              private strategies: StrategyCollection) {
   }
 
   async handle(event: Event): Promise<void> {
-    let unzipped  = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
-    let text      = unzipped.toString('ascii');
-    let decoded   = JSON.parse(text) as CloudWatchLogsDecodedData;
-    let config    = this.configResolver.resolve(decoded.logGroup);
-    let behaviour = _.get(this.behaviours, config.behaviour, this.behaviours['default']) as Behaviour;
+    let unzipped = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
+    let text     = unzipped.toString('ascii');
+    let decoded  = JSON.parse(text) as CloudWatchLogsDecodedData;
+    let config   = this.configResolver.resolve(decoded.logGroup);
+    let strategy = this.strategies.has(config.strategy)
+      ? this.strategies.get(config.strategy)
+      : this.strategies.get(DefaultStrategyIdentifier);
 
     let events = decoded.logEvents.map(ev => {
-      return Object.assign(
-        this.eventParser.getData(decoded.logGroup, decoded.logStream, ev),
-        behaviour.getData(decoded.logGroup, decoded.logStream, ev)
-      );
-    });
+      let context = {
+        group:  decoded.logGroup,
+        stream: decoded.logStream,
+        event:  ev
+      };
+
+      return strategy.from(context);
+    }).filter(x => null !== x);
 
     await this.sender.send(events, config.tags);
   }

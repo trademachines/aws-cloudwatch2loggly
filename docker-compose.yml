@@ -17,8 +17,8 @@ services:
           "groups": [
             {
               "match": "^ecs",
-              "behaviour": "ecs",
-              "tags": ["development","cloudwatch2loggly"]
+              "strategy": "ecs",
+              "tags": ["development","ecs","cloudwatch2loggly"]
             }
           ]
         }

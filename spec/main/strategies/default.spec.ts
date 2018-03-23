@@ -1,19 +1,19 @@
-import { EventParser } from '../../src/main';
+import { DefaultStrategy } from '../../../src/main/strategies';
 
 describe('parse events', () => {
-  let parser;
+  let strategy;
   const event = {
     timestamp: new Date().getTime(),
     message:   '',
   };
 
   beforeEach(() => {
-    parser = new EventParser();
+    strategy = new DefaultStrategy();
   });
 
   it('creates event', () => {
     const myEvent     = Object.assign({}, event, { message: 'foobar' });
-    const parsedEvent = parser.getData('group', 'stream', myEvent);
+    const parsedEvent = strategy.from({ group: 'group', stream: 'stream', event: myEvent });
 
     expect(parsedEvent).toEqual({
       timestamp: jasmine.any(String),
@@ -25,7 +25,7 @@ describe('parse events', () => {
 
   it('trims messages', () => {
     const myEvent     = Object.assign({}, event, { message: 'foobar     ' });
-    const parsedEvent = parser.getData('group', 'stream', myEvent);
+    const parsedEvent = strategy.from({ group: 'group', stream: 'stream', event: myEvent });
 
     expect(parsedEvent).toEqual(jasmine.objectContaining({
       message: 'foobar'

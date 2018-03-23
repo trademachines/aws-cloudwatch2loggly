@@ -1,4 +1,4 @@
 export * from './ecs';
-export * from './tokens';
+export * from './default';
 export * from './types'
 export * from './bootstrap';

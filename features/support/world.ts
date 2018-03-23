@@ -1,7 +1,7 @@
 import { defineSupportCode } from 'cucumber';
 import { Injector, ReflectiveInjector } from 'injection-js';
 import { OptionsWithUrl, RequestResponse } from 'request';
-import { providers } from '../../src/injector';
+import { providers, bootstrap } from '../../src/injector';
 import { ConfigResolver } from '../../src/main/config-resolver';
 import { LogglySender } from '../../src/main/loggly-sender';
 
@@ -42,6 +42,7 @@ function CustomWorld(this: CustomWorld) {
 
   this.injector = ReflectiveInjector.fromResolvedProviders(testProviders.concat(providers));
   this.lastError = null;
+  bootstrap(this.injector);
 }
 
 defineSupportCode(({ setWorldConstructor }) => {
