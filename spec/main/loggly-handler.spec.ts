@@ -49,7 +49,7 @@ describe('handle events', () => {
       .then(done);
   });
 
-  it('calls strategy to get data', (done) => {
+  it('calls strategy to get data', done => {
     const payload = logs(JSON.stringify({
       logGroup:  'test-something',
       logEvents: [
@@ -69,5 +69,28 @@ describe('handle events', () => {
       })
       .then(done)
       .catch(done.fail);
+  });
+
+  it('complains about missing strategy', done => {
+    const payload = logs(JSON.stringify({
+      logGroup:  'test-something',
+      logEvents: [
+        {
+          // no need to put data here, parser is mocked
+        }
+      ]
+    }));
+    config        = {
+      match:    '^test',
+      strategy: 'not-existing'
+    };
+
+    handler.handle(payload)
+      .then(() => done.fail())
+      .catch(err => {
+        expect(err).toEqual(jasmine.any(Error));
+        expect(err.message).toMatch(/^Can not find strategy/);
+      })
+      .then(done);
   });
 });

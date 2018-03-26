@@ -1,10 +1,10 @@
 import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
+import * as encoding from 'encoding';
 import { Injectable } from 'injection-js';
 import * as zlib from 'zlib';
 import { Handler } from '../lambda';
 import { ConfigResolver } from './config-resolver';
 import { LogglySender } from './loggly-sender';
-import { DefaultStrategyIdentifier } from './strategies';
 import { StrategyCollection } from './strategies/collection';
 
 export type Event = CloudWatchLogsEvent | any;
@@ -38,15 +38,14 @@ export class LogglyHandler implements Handler<Event> {
   }
 
   async handle(event: Event): Promise<void> {
-    let unzipped      = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
-    let text          = unzipped.toString('ascii');
-    let decoded       = parse(text) as CloudWatchLogsDecodedData;
-    let config        = this.configResolver.resolve(decoded.logGroup);
-    let strategyIdent = config.strategy || DefaultStrategyIdentifier;
-    let strategy      = this.strategies.get(strategyIdent);
+    let unzipped = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
+    let text     = encoding.convert(unzipped, 'utf8').toString();
+    let decoded  = parse(text) as CloudWatchLogsDecodedData;
+    let config   = this.configResolver.resolve(decoded.logGroup);
+    let strategy = this.strategies.get(config.strategy);
 
     if (!strategy) {
-      throw new Error(`Can not find strategy ${strategyIdent}`);
+      throw new Error(`Can not find strategy ${config.strategy}`);
     }
 
     let events = decoded.logEvents.map(ev => {
