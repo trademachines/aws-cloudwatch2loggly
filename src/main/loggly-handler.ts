@@ -21,6 +21,15 @@ export type Config = {
   groups: GroupConfig[];
 }
 
+function parse(text: string) {
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    e.message = e.message + `: ${text}`;
+    throw e;
+  }
+}
+
 @Injectable()
 export class LogglyHandler implements Handler<Event> {
   constructor(private configResolver: ConfigResolver,
@@ -31,7 +40,7 @@ export class LogglyHandler implements Handler<Event> {
   async handle(event: Event): Promise<void> {
     let unzipped      = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
     let text          = unzipped.toString('ascii');
-    let decoded       = JSON.parse(text) as CloudWatchLogsDecodedData;
+    let decoded       = parse(text) as CloudWatchLogsDecodedData;
     let config        = this.configResolver.resolve(decoded.logGroup);
     let strategyIdent = config.strategy || DefaultStrategyIdentifier;
     let strategy      = this.strategies.get(strategyIdent);
