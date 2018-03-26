@@ -12,6 +12,11 @@ const data = {
       id:        '33937610457670482952564625782629244863880840766005116928',
       timestamp: 1521815085350,
       message:   'START RequestId: ef3d6688-2ea5-11e8-9480-7dec15b31331 Version: $LATEST\n'
+    },
+    {
+      id:        '33937610457670482952564625782629244863880840766005116928',
+      timestamp: 1521815085350,
+      message:   'Something going on'
     }
   ]
 };
