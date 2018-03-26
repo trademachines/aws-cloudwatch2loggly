@@ -44,7 +44,7 @@ describe('handle events', () => {
       .then(() => done.fail())
       .catch(err => {
         expect(err).toEqual(jasmine.any(SyntaxError));
-        expect(err.message).toEqual('Unexpected end of JSON input');
+        expect(err.message).toEqual('Unexpected end of JSON input: {');
       })
       .then(done);
   });
