@@ -1,5 +1,6 @@
 import * as zlib from 'zlib';
 import { LogglyHandler } from '../../src/main';
+import { Strategy } from '../../src/main/strategies';
 import { StrategyCollection } from '../../src/main/strategies/collection';
 
 function logs(text: string) {
@@ -27,9 +28,9 @@ describe('handle events', () => {
       send: jasmine.createSpy('sender.send').and.returnValue(Promise.resolve())
     };
     strategy       = {
-      name: 'test',
-      from: jasmine.createSpy('strategy.from').and.returnValue({})
-    };
+      ident: 'test',
+      from:  jasmine.createSpy('strategy.from').and.returnValue({})
+    } as Strategy;
     collection     = new StrategyCollection();
     collection.add(strategy);
 
@@ -58,8 +59,8 @@ describe('handle events', () => {
       ]
     }));
     config        = {
-      match:     '^test',
-      behaviour: 'test'
+      match:    '^test',
+      strategy: 'test'
     };
 
     handler.handle(payload)

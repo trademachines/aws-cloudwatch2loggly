@@ -1,9 +1,9 @@
-import { ConfigResolver } from '../../src/main/config-resolver';
+import { ConfigResolver } from '../../src/main';
 
 const groupConfigOne = {
-  match:     '^one',
-  tags:      ['one', 'first'],
-  behaviour: 'ecs'
+  match:    '^one',
+  tags:     ['one', 'first'],
+  strategy: 'ecs'
 };
 const groupConfigTwo = {
   match: '^two',

@@ -29,13 +29,16 @@ export class LogglyHandler implements Handler<Event> {
   }
 
   async handle(event: Event): Promise<void> {
-    let unzipped = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
-    let text     = unzipped.toString('ascii');
-    let decoded  = JSON.parse(text) as CloudWatchLogsDecodedData;
-    let config   = this.configResolver.resolve(decoded.logGroup);
-    let strategy = this.strategies.has(config.strategy)
-      ? this.strategies.get(config.strategy)
-      : this.strategies.get(DefaultStrategyIdentifier);
+    let unzipped      = zlib.gunzipSync(new Buffer(event.awslogs.data, 'base64'));
+    let text          = unzipped.toString('ascii');
+    let decoded       = JSON.parse(text) as CloudWatchLogsDecodedData;
+    let config        = this.configResolver.resolve(decoded.logGroup);
+    let strategyIdent = config.strategy || DefaultStrategyIdentifier;
+    let strategy      = this.strategies.get(strategyIdent);
+
+    if (!strategy) {
+      throw new Error(`Can not find strategy ${strategyIdent}`);
+    }
 
     let events = decoded.logEvents.map(ev => {
       let context = {

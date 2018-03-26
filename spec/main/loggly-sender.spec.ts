@@ -1,5 +1,5 @@
 import * as nock from 'nock';
-import { LogglySender } from '../../src/main/loggly-sender';
+import { LogglySender } from '../../src/main';
 
 describe('sending data to loggly', () => {
   let sender: LogglySender;

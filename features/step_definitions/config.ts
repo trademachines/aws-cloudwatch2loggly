@@ -1,5 +1,5 @@
 import { defineSupportCode } from 'cucumber';
-import { ConfigResolver } from '../../src/main/config-resolver';
+import { ConfigResolver } from '../../src/main';
 import { CustomWorld, TestConfigResolver } from '../support/world';
 
 defineSupportCode(({ Given }) => {
