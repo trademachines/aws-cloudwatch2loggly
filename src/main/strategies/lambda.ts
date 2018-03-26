@@ -9,7 +9,9 @@ export class LambdaStrategy extends DefaultStrategy {
   from(ctx: EventContext) {
     let data = super.from(ctx) as any;
 
-    if (0 === data.message.indexOf('START ') || 0 === data.message.indexOf('REPORT ')) {
+    if (0 === data.message.indexOf('START ')
+      || 0 === data.message.indexOf('END ')
+      || 0 === data.message.indexOf('REPORT ')) {
       return null;
     }
 
