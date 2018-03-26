@@ -1,3 +1,4 @@
+export * from './config-resolver';
 export * from './loggly-handler';
-export * from './event-parser';
+export * from './loggly-sender';
 export * from './bootstrap';

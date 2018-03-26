@@ -1,9 +1,8 @@
 import { defineSupportCode } from 'cucumber';
 import { Injector, ReflectiveInjector } from 'injection-js';
 import { OptionsWithUrl, RequestResponse } from 'request';
-import { providers } from '../../src/injector';
-import { ConfigResolver } from '../../src/main/config-resolver';
-import { LogglySender } from '../../src/main/loggly-sender';
+import { bootstrap, providers } from '../../src/injector';
+import { ConfigResolver, LogglySender } from '../../src/main';
 
 export interface CustomWorld {
 }
@@ -24,7 +23,7 @@ export class TestLogglySender extends LogglySender {
 
 export class TestConfigResolver extends ConfigResolver {
   setConfig(config: string) {
-    this.config = JSON.parse(config);
+    super.parseConfig(JSON.parse(config));
   }
 }
 
@@ -40,8 +39,9 @@ function CustomWorld(this: CustomWorld) {
     }
   ]);
 
-  this.injector = ReflectiveInjector.fromResolvedProviders(testProviders.concat(providers));
+  this.injector  = ReflectiveInjector.fromResolvedProviders(testProviders.concat(providers));
   this.lastError = null;
+  bootstrap(this.injector);
 }
 
 defineSupportCode(({ setWorldConstructor }) => {

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { defineSupportCode } from 'cucumber';
 import * as _ from 'lodash';
-import { LogglySender } from '../../src/main/loggly-sender';
+import { LogglySender } from '../../src/main';
 import { CustomWorld, TestLogglySender } from '../support/world';
 
 defineSupportCode(({ Then }) => {

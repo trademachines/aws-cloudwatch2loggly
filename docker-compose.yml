@@ -16,9 +16,27 @@ services:
         {
           "groups": [
             {
-              "match": "^ecs",
-              "behaviour": "ecs",
-              "tags": ["development","cloudwatch2loggly"]
+              "match": "^ecs\\-",
+              "strategy": "ecs",
+              "tags": [
+                "ecs",
+                "cloudwatch2loggly"
+              ]
+            },
+            {
+              "match": "^\\/aws\\/lambda\\/",
+              "strategy": "lambda",
+              "tags": [
+                "lambda",
+                "cloudwatch2loggly"
+              ]
+            },
+            {
+              "match": ".*",
+              "strategy": "default",
+              "tags": [
+                "cloudwatch2loggly"
+              ]
             }
           ]
         }

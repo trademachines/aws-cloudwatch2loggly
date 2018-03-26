@@ -1,8 +1,7 @@
-// const nock    = require('nock');
-// const zlib    = require('zlib');
-
 import * as zlib from 'zlib';
 import { LogglyHandler } from '../../src/main';
+import { Strategy } from '../../src/main/strategies';
+import { StrategyCollection } from '../../src/main/strategies/collection';
 
 function logs(text: string) {
   return {
@@ -16,25 +15,26 @@ describe('handle events', () => {
   // let event;
   let configResolver;
   let config;
-  let eventParser;
   let sender;
-  let behaviour;
+  let strategy;
+  let collection;
   let handler: LogglyHandler;
 
   beforeEach(() => {
     configResolver = {
       resolve: () => config
     };
-    eventParser    = {
-      getData: jasmine.createSpy('eventParser.getData').and.returnValue({})
-    };
     sender         = {
       send: jasmine.createSpy('sender.send').and.returnValue(Promise.resolve())
     };
-    behaviour      = {
-      getData: jasmine.createSpy('behaviour.getData').and.returnValue({})
-    };
-    handler        = new LogglyHandler(configResolver, eventParser, sender, { test: behaviour });
+    strategy       = {
+      ident: 'test',
+      from:  jasmine.createSpy('strategy.from').and.returnValue({})
+    } as Strategy;
+    collection     = new StrategyCollection();
+    collection.add(strategy);
+
+    handler = new LogglyHandler(configResolver, sender, collection);
   });
 
   it('catches json.parse errors', done => {
@@ -44,12 +44,12 @@ describe('handle events', () => {
       .then(() => done.fail())
       .catch(err => {
         expect(err).toEqual(jasmine.any(SyntaxError));
-        expect(err.message).toEqual('Unexpected end of JSON input');
+        expect(err.message).toEqual('Unexpected end of JSON input: {');
       })
       .then(done);
   });
 
-  it('calls parser and behaviour to get data', (done) => {
+  it('calls strategy to get data', done => {
     const payload = logs(JSON.stringify({
       logGroup:  'test-something',
       logEvents: [
@@ -59,16 +59,38 @@ describe('handle events', () => {
       ]
     }));
     config        = {
-      match:     '^test',
-      behaviour: 'test'
+      match:    '^test',
+      strategy: 'test'
     };
 
     handler.handle(payload)
       .then(() => {
-        expect(eventParser.getData).toHaveBeenCalled();
-        expect(behaviour.getData).toHaveBeenCalled();
+        expect(strategy.from).toHaveBeenCalled();
       })
       .then(done)
       .catch(done.fail);
+  });
+
+  it('complains about missing strategy', done => {
+    const payload = logs(JSON.stringify({
+      logGroup:  'test-something',
+      logEvents: [
+        {
+          // no need to put data here, parser is mocked
+        }
+      ]
+    }));
+    config        = {
+      match:    '^test',
+      strategy: 'not-existing'
+    };
+
+    handler.handle(payload)
+      .then(() => done.fail())
+      .catch(err => {
+        expect(err).toEqual(jasmine.any(Error));
+        expect(err.message).toMatch(/^Can not find strategy/);
+      })
+      .then(done);
   });
 });

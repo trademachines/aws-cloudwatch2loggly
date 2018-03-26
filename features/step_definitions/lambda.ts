@@ -12,6 +12,10 @@ defineSupportCode(({ When, Then }) => {
       .catch(err => world.lastError = err);
   }
 
+  Then(/^dump last error$/, function (this: CustomWorld) {
+    console.log(this.lastError);
+  });
+
   Then(/^an error occured$/, function (this: CustomWorld) {
     expect(this.lastError).not.to.be.null;
   });
