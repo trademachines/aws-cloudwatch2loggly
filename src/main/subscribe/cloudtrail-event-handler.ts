@@ -41,6 +41,8 @@ export class CloudtrailEventHandler extends AbstractSubscribeHandler<CloudTrailE
 
   protected async createSubscription(logGroupName: string, context: Context) {
     if (!this.isWhiteListed(logGroupName)) {
+      console.log(`Won't create subscription for log group ${logGroupName} as it is not matched by the whitelist`);
+
       return;
     }
 

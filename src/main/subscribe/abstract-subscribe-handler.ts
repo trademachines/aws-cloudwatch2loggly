@@ -12,9 +12,11 @@ export abstract class AbstractSubscribeHandler<T> extends AbstractChainItem<T> {
   protected async createSubscription(logGroupName: string, context: Context) {
     try {
       let filters = await this.cloudWatchLogs.describeSubscriptionFilters({ logGroupName: logGroupName }).promise();
+
       if (filters.subscriptionFilters) {
         await this.deleteExistingSubscription(filters.subscriptionFilters);
       }
+
       await this.cloudWatchLogs.putSubscriptionFilter({
         logGroupName:   logGroupName,
         filterName:     context.functionName,
@@ -22,6 +24,7 @@ export abstract class AbstractSubscribeHandler<T> extends AbstractChainItem<T> {
         distribution:   'ByLogStream',
         filterPattern:  '',
       }).promise();
+      console.log(`Successfully created subscription for log group ${logGroupName}`);
     } catch (e) {
       console.log(`Can't create subscription for log group ${logGroupName}: ${JSON.stringify(e)}`);
       throw e;
