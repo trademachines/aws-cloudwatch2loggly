@@ -16,6 +16,7 @@ before_install:
   - export PATH="$HOME/.yarn/bin:$PATH"
 
 script:
+  - chmod -R 0777 node_modules
   - docker-compose run cloudwatch2loggly npm run test:ci
   - npm run dist
 
