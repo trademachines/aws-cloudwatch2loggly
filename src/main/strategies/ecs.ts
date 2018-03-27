@@ -1,6 +1,6 @@
 import { Injectable } from 'injection-js';
-import { EventContext } from '../types';
 import { DefaultStrategy } from './default';
+import { EventContext } from './types';
 
 @Injectable()
 export class EcsStrategy extends DefaultStrategy {

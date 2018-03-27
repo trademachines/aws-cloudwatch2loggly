@@ -1,22 +1,23 @@
-import { Inject, Injectable } from 'injection-js';
+import { Injectable } from 'injection-js';
 import * as _ from 'lodash';
-import { Config, GroupConfig } from './loggly-handler';
-import * as tokens from './tokens';
+import { Configuration, Types } from './configuration';
 
-type InternalGroupConfig = GroupConfig & {
+type InternalGroupConfig = Types.GroupConfig & {
   matchRegex?: RegExp;
 };
-type InternalConfig = Config & {
+
+type InternalConfig = Types.Config & {
   groups: InternalGroupConfig[];
 };
 
 @Injectable()
 export class ConfigResolver {
   protected config: InternalConfig;
-  protected resolved: { [key: string]: GroupConfig } = {};
+  protected resolved: { [key: string]: InternalGroupConfig } = {};
 
-  constructor(@Inject(tokens.Config) config: Config) {
-    this.parseConfig(config);
+  constructor(config: Configuration) {
+    this.parseConfig(config.getConfig());
+    config.on('changed', (ev: Types.ConfigChangedEvent) => this.parseConfig(ev.config));
   }
 
   resolve(groupName: string) {
@@ -33,8 +34,9 @@ export class ConfigResolver {
     return this.resolved[groupName] = groupConfig;
   }
 
-  protected parseConfig(config: Config) {
-    this.config = Object.assign({}, config) as InternalConfig;
+  protected parseConfig(config: Types.Config) {
+    this.resolved = {};
+    this.config   = Object.assign({}, config) as InternalConfig;
     this.config.groups.forEach((g: InternalGroupConfig) => {
       g.matchRegex = new RegExp(g.match, 'i');
     });

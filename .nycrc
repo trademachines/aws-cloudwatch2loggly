@@ -1,0 +1,18 @@
+{
+  "extension": [
+    ".ts",
+    ".tsx"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts"
+  ],
+  "require": [
+    "reflect-metadata",
+    "ts-node/register"
+  ],
+  "all": true,
+  "cache": true
+}

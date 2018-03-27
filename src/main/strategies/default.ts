@@ -1,7 +1,6 @@
 import { Injectable } from 'injection-js';
 import { get } from 'lodash';
-import { EventContext } from '../types';
-import { Strategy } from './types';
+import { EventContext, Strategy } from './types';
 
 export const DefaultStrategyIdentifier = 'default';
 
