@@ -1,4 +1,5 @@
 import { ConfigResolver } from '../../src/main';
+import { Configuration } from '../../src/main/configuration';
 
 const groupConfigOne = {
   match:    '^one',
@@ -14,9 +15,12 @@ describe('config resolving', () => {
   let configResolver: ConfigResolver;
 
   beforeEach(() => {
-    configResolver = new ConfigResolver({
-      groups: [groupConfigOne, groupConfigTwo]
-    });
+    configResolver = new ConfigResolver(new Configuration({
+      groups:       [groupConfigOne, groupConfigTwo],
+      subscription: {
+        whitelist: []
+      }
+    }));
   });
 
   it('finds config by matching group name', () => {

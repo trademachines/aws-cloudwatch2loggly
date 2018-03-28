@@ -2,24 +2,12 @@ import { CloudWatchLogsDecodedData, CloudWatchLogsEvent } from 'aws-lambda';
 import * as encoding from 'encoding';
 import { Injectable } from 'injection-js';
 import * as zlib from 'zlib';
-import { Handler } from '../lambda';
+import { AbstractChainItem } from './chain';
 import { ConfigResolver } from './config-resolver';
 import { LogglySender } from './loggly-sender';
 import { StrategyCollection } from './strategies/collection';
 
 export type Event = CloudWatchLogsEvent | any;
-
-export type GroupStrategy = string;
-
-export type GroupConfig = {
-  match: string;
-  tags: string[];
-  strategy?: GroupStrategy;
-}
-
-export type Config = {
-  groups: GroupConfig[];
-}
 
 function parse(text: string) {
   try {
@@ -31,10 +19,11 @@ function parse(text: string) {
 }
 
 @Injectable()
-export class LogglyHandler implements Handler<Event> {
+export class LogglyHandler extends AbstractChainItem<Event> {
   constructor(private configResolver: ConfigResolver,
               private sender: LogglySender,
               private strategies: StrategyCollection) {
+    super();
   }
 
   async handle(event: Event): Promise<void> {

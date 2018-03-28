@@ -1,10 +1,10 @@
 import { defineSupportCode } from 'cucumber';
-import { ConfigResolver } from '../../src/main';
-import { CustomWorld, TestConfigResolver } from '../support/world';
+import { Configuration } from '../../src/main/configuration';
+import { CustomWorld } from '../support/world';
 
 defineSupportCode(({ Given }) => {
   Given(/^the config is set to$/, function (this: CustomWorld, config: string) {
-    let resolver = this.injector.get(ConfigResolver) as TestConfigResolver;
-    resolver.setConfig(config);
+    let configuration = this.injector.get(Configuration);
+    configuration.setConfig(JSON.parse(config));
   });
 });

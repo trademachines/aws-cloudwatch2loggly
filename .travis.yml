@@ -9,17 +9,18 @@ cache:
   yarn: true
   directories:
     - node_modules
+    - .nyc_output
 
-before_install:
-  - curl -o- -L https://yarnpkg.com/install.sh | bash -s
-  - export PATH="$HOME/.yarn/bin:$PATH"
+install:
+  - docker-compose run cloudwatch2loggly yarn install
 
 script:
-  - docker-compose run cloudwatch2loggly npm t
-  - npm run dist
+  - docker-compose run cloudwatch2loggly npm run test:ci
+  - docker-compose run cloudwatch2loggly npm run dist
 
 before_deploy:
   - cd build
+  - docker-compose run cloudwatch2loggly chmod -R 0777 .
 
 deploy:
   -

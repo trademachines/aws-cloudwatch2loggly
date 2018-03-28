@@ -10,6 +10,7 @@ services:
       - ./:/usr/share/app
     links:
       - loggly-dummy
+      - localstack
     env_file: config.env
     environment:
       CONFIG: |
@@ -38,7 +39,12 @@ services:
                 "cloudwatch2loggly"
               ]
             }
-          ]
+          ],
+          "subscription": {
+            "whitelist": [
+              "^\\/aws\\/lambda\\/"
+            ]
+          }
         }
 
   loggly-dummy:
@@ -47,3 +53,12 @@ services:
       - .docker/loggly-dummy/data/:/usr/share/app/data
     ports:
       - 80
+
+  # this wont work and is just a precaution to not accidentally hit real AWS resources
+  localstack:
+    image: localstack/localstack
+    ports:
+      - 4582
+    environment:
+      SERVICES: 'cloudwatch'
+      DEFAULT_REGION: eu-west-1
