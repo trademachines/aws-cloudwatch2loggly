@@ -3,7 +3,7 @@ version: '2'
 services:
   cloudwatch2loggly:
     image: node:8.10-alpine
-    command: npm run dev
+    command: sh
     working_dir: /usr/share/app
     volumes:
       - ~/.cache/yarn:/root/.cache/yarn

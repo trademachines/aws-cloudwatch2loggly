@@ -8,6 +8,10 @@ describe('sending data to loggly', () => {
     sender = new LogglySender('http://test', 'test-token');
   });
 
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('stringifies events', done => {
     const events = [{ event: 1 }, { event: 2 }];
     const loggly = nock(/.+/)
