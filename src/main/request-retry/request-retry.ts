@@ -1,10 +1,7 @@
 import * as _ from 'lodash';
-import { Response } from 'request';
 import * as request from 'request-promise-native';
-
-export type RetryPolicy = (error: any, response: Response) => boolean;
-
-export type DelayStrategy = (attempt: number) => number;
+import { DelayStrategy } from './delay-strategies';
+import { RetryPolicy } from './retry-policies';
 
 export type RetryOptions = {
   retry: {
@@ -44,6 +41,7 @@ function retry(args: request.Options & RetryOptions, originalFn: OriginalRequest
   return tryIt();
 }
 
+// decorate original request methods
 ['get', 'head', 'options', 'post', 'put', 'patch', 'del', 'delete'].forEach(verb => {
   let original  = request[verb];
   request[verb] = (args) => {
@@ -51,43 +49,7 @@ function retry(args: request.Options & RetryOptions, originalFn: OriginalRequest
       return Promise.reject('You are only allowed to provide options as an object');
     }
     args = _.assign({}, args);
+
     return retry(args, original);
   };
 });
-
-const RetriableNetworkErrors = [
-  'ECONNRESET', 'ENOTFOUND', 'ESOCKETTIMEDOUT', 'ETIMEDOUT',
-  'ECONNREFUSED', 'EHOSTUNREACH', 'EPIPE', 'EAI_AGAIN'
-];
-
-function NetworkError(error: any, _response: Response) {
-  let code = _.get(error, 'cause.code');
-
-  return _.includes(RetriableNetworkErrors, code);
-}
-
-function HttpError(error: any, response: Response) {
-  let responseCode = _.get(response, 'statusCode');
-  let errorCode    = _.get(error, 'statusCode');
-  let response5xx  = 500 <= responseCode && responseCode < 600;
-  let error5xx     = 500 <= errorCode && errorCode < 600;
-
-  return response5xx || error5xx;
-}
-
-function DefaultRetryPolicy(error: any, response: Response) {
-  return HttpError(error, response) || NetworkError(error, response);
-}
-
-export const RetryPolicies = {
-  Default: DefaultRetryPolicy
-};
-
-
-function ExponentialBackoff(base: number): DelayStrategy {
-  return attempt => base * 2 ** attempt;
-}
-
-export const DelayStrategies = {
-  ExponentialBackoff: ExponentialBackoff
-};

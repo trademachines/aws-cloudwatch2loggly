@@ -1,7 +1,7 @@
 import * as nock from 'nock';
 import * as request from 'request-promise-native';
 import { StatusCodeError } from 'request-promise-native/errors';
-import '../../src/main/request-retry';
+import '../../../src/main/request-retry';
 
 describe('retry http requests', () => {
   const options = {
