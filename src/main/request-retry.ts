@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { Response } from 'request';
-import * as request from 'request-promise-native'
+import * as request from 'request-promise-native';
 
 export type RetryPolicy = (error: any, response: Response) => boolean;
 
@@ -14,10 +14,11 @@ export type RetryOptions = {
   }
 };
 
-const RetryMarker = '!!!';
+type OriginalRequestPromiseMethod = (options: request.Options) => request.RequestPromise
 
-function retry(args, originalFn) {
+const RetryMarker = {};
 
+function retry(args: request.Options & RetryOptions, originalFn: OriginalRequestPromiseMethod) {
   let retryOptions = args.retry;
   let fullResponse = args.resolveWithFullResponse || false;
   delete args.retry;
