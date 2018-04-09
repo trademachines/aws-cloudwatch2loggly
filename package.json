@@ -3,7 +3,7 @@
   "description": "Forwards messages from Cloudwatch to Loggly",
   "license": "MIT",
   "scripts": {
-    "lambda-local": "lambda-local -l dev.js -t 10",
+    "lambda": "lambda-local -l dev.js -t 30",
     "clean": "rimraf coverage build tmp",
     "build": "npm run lint && tsc -p tsconfig.json && copy src/_resources/**/* build/src/_resources",
     "watch": "tsc -w -p tsconfig.json",
