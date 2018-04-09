@@ -32,7 +32,7 @@ export class LogglySender {
         retryPolicy:   RetryPolicies.Default,
         delayStrategy: DelayStrategies.ExponentialBackoff(2000)
       },
-      timeout: 5000,
+      timeout: 2000,
       url:     `${this.logglyHost}/bulk/${this.logglyToken}/tag/${encodeURIComponent(tags.join(','))}`,
       body:    body,
       headers: {
