@@ -1,0 +1,7 @@
+- [ ] Uses the LTS version
+- [ ] Matches our norm 
+- [ ] Has swagger documentation.  
+    - [ ] No? Create one.
+    - [ ] Yes? It is up to date.
+- [ ] PR template is up to date
+- [ ] README is up to date
