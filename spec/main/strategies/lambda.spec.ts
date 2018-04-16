@@ -35,4 +35,53 @@ describe('lambda strategy', () => {
       lambdaFunction: 'fn-name'
     }));
   });
+
+  it('adds lambda request id', () => {
+    const data = strategy.from({
+      stream: null,
+      group:  null,
+      event:  {
+        id:        '',
+        timestamp: 1234567890,
+        message:   '2018-03-01T00:01:00.000Z\txxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\tTest'
+      }
+    });
+
+    expect(data).toEqual(jasmine.objectContaining({
+      lambdaRequestId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      message:         'Test'
+    }));
+  });
+
+  it('overwrites timestamp', () => {
+    const data = strategy.from({
+      stream: null,
+      group:  null,
+      event:  {
+        id:        '',
+        timestamp: 1234567890,
+        message:   '2018-03-01T00:01:00.000Z\txxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\tSomething happened'
+      }
+    });
+
+    expect(data).toEqual(jasmine.objectContaining({
+      timestamp: '2018-03-01T00:01:00.000Z'
+    }));
+  });
+
+  it('retains message in case there is no request id', () => {
+    const data = strategy.from({
+      stream: null,
+      group:  null,
+      event:  {
+        id:        '',
+        timestamp: 1234567890,
+        message:   'Something happened'
+      }
+    });
+
+    expect(data).toEqual(jasmine.objectContaining({
+      message: 'Something happened'
+    }));
+  });
 });

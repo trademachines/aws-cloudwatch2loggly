@@ -2,6 +2,8 @@ import { Injectable } from 'injection-js';
 import { DefaultStrategy } from './default';
 import { EventContext } from './types';
 
+const messageRegex = new RegExp(/^([^\t]+)\t(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})\t(.+)$/, 'i');
+
 @Injectable()
 export class LambdaStrategy extends DefaultStrategy {
   ident = 'lambda';
@@ -15,7 +17,17 @@ export class LambdaStrategy extends DefaultStrategy {
       return null;
     }
 
+    let matched = messageRegex.exec(data.message);
+    if (matched) {
+      let [, timestamp, requestId, message,] = matched;
+
+      data.timestamp       = timestamp;
+      data.lambdaRequestId = requestId;
+      data.message         = message;
+    }
+
     data.lambdaFunction = (ctx.group || '').replace('/aws/lambda/', '');
+
     return data;
   }
 }
