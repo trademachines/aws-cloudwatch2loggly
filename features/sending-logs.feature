@@ -56,5 +56,5 @@ Feature: Sending logs to Loggly
     When I send the file "cloudwatch-logs-event-lambda.js"
     Then a request to Loggly was send at "http://loggly-dummy/bulk/dev-token/tag/cucumber,lambda,cloudwatch2loggly" with
     """
-    {"timestamp":"2018-03-01T00:00:00.000Z","message":"Something happened","logGroup":"/aws/lambda/cucumber","logStream":"a1b2c3","lambdaFunction":"cucumber"}
+    {"timestamp":"2018-03-01T00:01:00.000Z","message":"Something happened","logGroup":"/aws/lambda/cucumber","logStream":"a1b2c3","lambdaRequestId":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx","lambdaFunction":"cucumber"}
     """
