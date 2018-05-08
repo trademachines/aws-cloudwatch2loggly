@@ -9,7 +9,7 @@ describe('ecs strategy', () => {
 
   it('adds infos', () => {
     const stream = 'prefix/with/slashes/container/id';
-    const data   = strategy.from({ stream: stream, group: null, event: null });
+    const data   = strategy.fromMessage({ stream: stream, group: null, event: null });
 
     expect(data).toEqual(jasmine.objectContaining({
       dockerPrefix:    'prefix/with/slashes',
@@ -18,9 +18,18 @@ describe('ecs strategy', () => {
     }));
   });
 
+  it('adds info to context', () => {
+    const stream = 'prefix/with/slashes/container/id';
+    const data   = strategy.fromContext({ stream: stream, group: null });
+
+    expect(data).toEqual(jasmine.objectContaining({
+      tags:    ['container', 'prefix/with/slashes'],
+    }));
+  });
+
   it('does add infos for stream names without slash', () => {
     const stream = 'random-stream-name';
-    const data   = strategy.from({ stream: stream, group: null, event: null });
+    const data   = strategy.fromMessage({ stream: stream, group: null, event: null });
     const keys   = Object.keys(data);
 
     expect(keys).not.toContain('dockerPrefix');

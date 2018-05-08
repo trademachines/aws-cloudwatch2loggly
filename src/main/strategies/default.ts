@@ -1,6 +1,6 @@
 import { Injectable } from 'injection-js';
 import { get } from 'lodash';
-import { EventContext, Strategy } from './types';
+import { EventContext, EventMessage, Strategy } from './types';
 
 export const DefaultStrategyIdentifier = 'default';
 
@@ -8,16 +8,20 @@ export const DefaultStrategyIdentifier = 'default';
 export class DefaultStrategy implements Strategy {
   ident = DefaultStrategyIdentifier;
 
-  from(ctx: EventContext) {
-    let msg       = get(ctx.event, 'message', '');
-    let timestamp = get(ctx.event, 'timestamp');
+  fromMessage(message: EventMessage) {
+    let text      = get(message.event, 'message', '');
+    let timestamp = get(message.event, 'timestamp');
     let date      = timestamp ? new Date(timestamp) : new Date();
 
     return {
       timestamp: date.toISOString(),
-      message:   msg.trim(),
-      logGroup:  ctx.group,
-      logStream: ctx.stream,
+      message:   text.trim(),
+      logGroup:  message.group,
+      logStream: message.stream
     };
+  }
+
+  fromContext(_context: EventContext): any {
+    return {};
   }
 }

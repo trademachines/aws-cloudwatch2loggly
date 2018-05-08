@@ -7,7 +7,7 @@ describe('parse events', () => {
     message:   '',
   };
 
-  function context(event, group = 'group', stream = 'stream') {
+  function message(event, group = 'group', stream = 'stream') {
     return {
       group:  group,
       stream: stream,
@@ -21,7 +21,7 @@ describe('parse events', () => {
 
   it('turns timestamp into iso string', () => {
     const myEvent     = Object.assign({}, event, { timestamp: 1519862400000 });
-    const parsedEvent = strategy.from(context(myEvent));
+    const parsedEvent = strategy.fromMessage(message(myEvent));
 
     expect(parsedEvent).toEqual(jasmine.objectContaining({
       timestamp: '2018-03-01T00:00:00.000Z'
@@ -30,7 +30,7 @@ describe('parse events', () => {
 
   it('trims messages', () => {
     const myEvent     = Object.assign({}, event, { message: 'foobar     ' });
-    const parsedEvent = strategy.from(context(myEvent));
+    const parsedEvent = strategy.fromMessage(message(myEvent));
 
     expect(parsedEvent).toEqual(jasmine.objectContaining({
       message: 'foobar'
@@ -38,7 +38,7 @@ describe('parse events', () => {
   });
 
   it('passes group and stream as is', () => {
-    const parsedEvent = strategy.from(context(event, 'test-group', 'test-stream'));
+    const parsedEvent = strategy.fromMessage(message(event, 'test-group', 'test-stream'));
 
     expect(parsedEvent).toEqual(jasmine.objectContaining({
       logGroup:  'test-group',

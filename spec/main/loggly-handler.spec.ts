@@ -28,8 +28,9 @@ describe('handle events', () => {
       send: jasmine.createSpy('sender.send').and.returnValue(Promise.resolve())
     };
     strategy       = {
-      ident: 'test',
-      from:  jasmine.createSpy('strategy.from').and.returnValue({})
+      ident:       'test',
+      fromContext: jasmine.createSpy('strategy.context').and.returnValue({}),
+      fromMessage: jasmine.createSpy('strategy.msg').and.returnValue({})
     } as Strategy;
     collection     = new StrategyCollection();
     collection.add(strategy);
@@ -65,7 +66,8 @@ describe('handle events', () => {
 
     handler.handle(payload)
       .then(() => {
-        expect(strategy.from).toHaveBeenCalled();
+        expect(strategy.fromContext).toHaveBeenCalled();
+        expect(strategy.fromMessage).toHaveBeenCalled();
       })
       .then(done)
       .catch(done.fail);

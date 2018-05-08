@@ -18,7 +18,7 @@ describe('sending data to loggly', () => {
       .post(/^\/bulk\/test-token\//, `{"event":1}\n{"event":2}`)
       .reply(200, 'ok');
 
-    sender.send(events)
+    sender.send({}, events)
       .then(() => {
         expect(loggly.isDone()).toBeTruthy();
       })
@@ -32,7 +32,7 @@ describe('sending data to loggly', () => {
       .post(/^\/bulk\/test-token\/tag\/one%2Ctwo/)
       .reply(200, 'ok');
 
-    sender.send(events, ['one', 'two'])
+    sender.send({}, events, ['one', 'two'])
       .then(() => {
         expect(loggly.isDone()).toBeTruthy();
       })
