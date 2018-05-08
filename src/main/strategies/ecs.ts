@@ -1,16 +1,16 @@
 import { Injectable } from 'injection-js';
 import { DefaultStrategy } from './default';
-import { EventContext } from './types';
+import { EventContext, EventMessage } from './types';
 
 @Injectable()
 export class EcsStrategy extends DefaultStrategy {
   ident = 'ecs';
 
-  from(ctx: EventContext) {
-    let data = super.from(ctx) as any;
+  fromMessage(message: EventMessage) {
+    let data = super.fromMessage(message) as any;
 
-    if (ctx.stream.includes('/')) {
-      const parts = ctx.stream.split('/');
+    if (message.stream.includes('/')) {
+      const parts = message.stream.split('/');
 
       data.dockerTaskId    = parts.pop();
       data.dockerContainer = parts.pop();
@@ -18,5 +18,23 @@ export class EcsStrategy extends DefaultStrategy {
     }
 
     return data;
+  }
+
+  fromContext(context: EventContext) {
+    if (context.stream.includes('/')) {
+      const parts = context.stream.split('/');
+      parts.pop();
+
+      return {
+        tags: [
+          parts.pop(),
+          parts.join('/')
+        ]
+      };
+    }
+
+    return {
+      tags: []
+    };
   }
 }

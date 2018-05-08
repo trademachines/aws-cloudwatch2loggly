@@ -1,6 +1,6 @@
 import { Injectable } from 'injection-js';
 import { DefaultStrategy } from './default';
-import { EventContext } from './types';
+import { EventMessage } from './types';
 
 const messageRegex = new RegExp(/^([^\t]+)\t(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})\t(.+)$/, 'i');
 
@@ -8,8 +8,8 @@ const messageRegex = new RegExp(/^([^\t]+)\t(\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12})
 export class LambdaStrategy extends DefaultStrategy {
   ident = 'lambda';
 
-  from(ctx: EventContext) {
-    let data = super.from(ctx) as any;
+  fromMessage(ctx: EventMessage) {
+    let data = super.fromMessage(ctx) as any;
 
     if (0 === data.message.indexOf('START ')
       || 0 === data.message.indexOf('END ')

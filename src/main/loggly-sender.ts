@@ -10,9 +10,9 @@ export class LogglySender {
               @Inject(tokens.LogglyToken) private logglyToken: string) {
   }
 
-  async send(events: any[], tags: string[] = []) {
+  async send(context: any, events: any[], tags: string[] = []) {
     let serialized = this.serialize(events);
-    let options    = this.buildHttpOptions(tags, serialized);
+    let options    = this.buildHttpOptions(context, tags, serialized);
 
     await this.doSend(options);
   }
@@ -25,7 +25,9 @@ export class LogglySender {
     return events.map(e => JSON.stringify(e)).join('\n');
   }
 
-  private buildHttpOptions(tags: string[], body: string): OptionsWithUrl & RetryOptions {
+  private buildHttpOptions(context, tags: string[], body: string): OptionsWithUrl & RetryOptions {
+    const allTags = [...tags, ...(context.tags || [])];
+
     return {
       retry:   {
         maxAttempts:   3,
@@ -33,7 +35,7 @@ export class LogglySender {
         delayStrategy: DelayStrategies.ExponentialBackoff(2000)
       },
       timeout: 2000,
-      url:     `${this.logglyHost}/bulk/${this.logglyToken}/tag/${encodeURIComponent(tags.join(','))}`,
+      url:     `${this.logglyHost}/bulk/${this.logglyToken}/tag/${encodeURIComponent(allTags.join(','))}`,
       body:    body,
       headers: {
         'Content-Type':   'application/json',

@@ -14,7 +14,7 @@ describe('lambda strategy', () => {
       'REPORT RequestId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\tDuration: 378.53 ms\tBilled Duration: 400 ms Memory Size: 256 MB\tMax Memory Used: 47 MB\n'
     ];
     msgs.forEach(m => {
-      let data = strategy.from({
+      let data = strategy.fromMessage({
         stream: null,
         group:  null,
         event:  {
@@ -29,7 +29,7 @@ describe('lambda strategy', () => {
   });
 
   it('adds lambda function name', () => {
-    const data = strategy.from({ stream: null, group: '/aws/lambda/fn-name', event: null });
+    const data = strategy.fromMessage({ stream: null, group: '/aws/lambda/fn-name', event: null });
 
     expect(data).toEqual(jasmine.objectContaining({
       lambdaFunction: 'fn-name'
@@ -37,7 +37,7 @@ describe('lambda strategy', () => {
   });
 
   it('adds lambda request id', () => {
-    const data = strategy.from({
+    const data = strategy.fromMessage({
       stream: null,
       group:  null,
       event:  {
@@ -54,7 +54,7 @@ describe('lambda strategy', () => {
   });
 
   it('overwrites timestamp', () => {
-    const data = strategy.from({
+    const data = strategy.fromMessage({
       stream: null,
       group:  null,
       event:  {
@@ -70,7 +70,7 @@ describe('lambda strategy', () => {
   });
 
   it('retains message in case there is no request id', () => {
-    const data = strategy.from({
+    const data = strategy.fromMessage({
       stream: null,
       group:  null,
       event:  {

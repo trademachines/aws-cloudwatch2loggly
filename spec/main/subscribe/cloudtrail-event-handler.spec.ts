@@ -32,7 +32,7 @@ describe('handling cloudtrail events', () => {
     handler                     = new CloudtrailEventHandler(cloudwatchLogs, config);
   });
 
-  it('will forward events that are not from logs.amazonaws.com', done => {
+  it('will forward events that are not fromMessage logs.amazonaws.com', done => {
     let next  = {
       handle:  jasmine.createSpy('next.handle'),
       setNext: () => next

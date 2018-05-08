@@ -37,16 +37,20 @@ export class LogglyHandler extends AbstractChainItem<Event> {
       throw new Error(`Can not find strategy ${config.strategy}`);
     }
 
-    let events = decoded.logEvents.map(ev => {
+    let context = strategy.fromContext({
+      group:  decoded.logGroup,
+      stream: decoded.logStream,
+    });
+    let events  = decoded.logEvents.map(ev => {
       let context = {
         group:  decoded.logGroup,
         stream: decoded.logStream,
         event:  ev
       };
 
-      return strategy.from(context);
+      return strategy.fromMessage(context);
     }).filter(x => null !== x);
 
-    await this.sender.send(events, config.tags);
+    await this.sender.send(context, events, config.tags);
   }
 }
