@@ -75,5 +75,5 @@ Feature: Sending logs to Loggly
     When I send the file "cloudwatch-logs-event-sns-failure.js"
     Then a request to Loggly was send at "http://loggly-dummy/bulk/dev-token/tag/cucumber,sns,cloudwatch2loggly" with
     """
-    {"timestamp":"2018-03-01T00:00:00.000Z","message":{"ErrorCode":"InvalidParameterValue","ErrorMessage":"Number of message attributes [11] exceeds the maximum allowed [10].","sqsRequestId":"Unrecoverable"},"logGroup":"sns/aws-test-1/123456789012/cucumber/Failure","logStream":"abcdef12-3456-7890-abcd-ef1234567890","snsTopicArn":"arn:aws:sns:aws-test-1:123456789012:cucumber-topic","snsDeliveryDestination":"arn:aws:sqs:aws-test-1:123456789012:dbg-sns-40599u1jui68jlx"}
+    {"timestamp":"2018-03-01T00:00:00.000Z","message":"\"Something went horribly wrong\"","logGroup":"sns/aws-test-1/123456789012/cucumber/Failure","logStream":"abcdef12-3456-7890-abcd-ef1234567890","snsTopicArn":"arn:aws:sns:aws-test-1:123456789012:cucumber-topic","snsDeliveryDestination":"arn:aws:sqs:aws-test-1:123456789012:dbg-sns-40599u1jui68jlx"}
     """

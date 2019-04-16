@@ -49,7 +49,7 @@ describe('sns strategy', () => {
     }));
   });
 
-  it('uses parsed provider response as message', () => {
+  it('uses provider response as message', () => {
     const providerResponse = 'Something went wrong';
     const data = strategy.fromMessage({
       stream: null,
@@ -59,7 +59,7 @@ describe('sns strategy', () => {
         timestamp: null,
         message:   JSON.stringify({
           delivery: {
-            providerResponse: JSON.stringify(providerResponse)
+            providerResponse: providerResponse
           }
         })
       }

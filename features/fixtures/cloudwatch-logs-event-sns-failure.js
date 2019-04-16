@@ -15,11 +15,7 @@ const data = {
         },
         delivery:     {
           destination:      'arn:aws:sqs:aws-test-1:123456789012:dbg-sns-40599u1jui68jlx',
-          providerResponse: JSON.stringify({
-            ErrorCode:    'InvalidParameterValue',
-            ErrorMessage: 'Number of message attributes [11] exceeds the maximum allowed [10].',
-            sqsRequestId: 'Unrecoverable'
-          }),
+          providerResponse: JSON.stringify('Something went horribly wrong'),
         },
         status:       'FAILURE'
       })
