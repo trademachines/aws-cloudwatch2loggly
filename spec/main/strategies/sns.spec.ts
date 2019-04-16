@@ -7,8 +7,8 @@ describe('sns strategy', () => {
     strategy = new SnsStrategy();
   });
 
-  it('adds topic arn', () => {
-    const topicArn = 'topic-arn';
+  it('adds aws and sns information', () => {
+    const topicArn = 'arn:aws:sns:aws-test-1:123456789012:topic-name';
     const data = strategy.fromMessage({
       stream: null,
       group:  null,
@@ -24,7 +24,10 @@ describe('sns strategy', () => {
     });
 
     expect(data).toEqual(jasmine.objectContaining({
-      snsTopicArn: topicArn
+      snsTopicArn:  topicArn,
+      snsTopicName: 'topic-name',
+      awsRegion:    'aws-test-1',
+      awsAccountId: '123456789012'
     }));
   });
 
