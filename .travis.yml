@@ -30,7 +30,7 @@ deploy:
     handler_name: handle
     role:
       secure: "aFBDpaIB+aZm4IpVBMAvG8hYhXFJOuYPt8vX8Usw2S7JSuXQeHhkaxusJy2w2GJpBilQSpOMp2X72i1XvQ54jNRW+361TBgCf6SSFV51xzMgguGdH8MRZAeGAJv8LT+KeasmVz8j/DgduvUcYcieMzgt204T0cXrYthRgH2Ifgj2uQ5eRySxcvYNuvbhcSkSYqoTkMMGie5vBZ/u0Jz/IcYxtlp3XCJX9aW5fLQ9Ln/gEOQrB0uHEDgYoYsctt/e1Uk3hqpapZ36W1rigyfWXHsGQpqy4NRzc4zmMwKkuoNqBcBZ95Xv9SN84vZ9CHFbhXhmoxWFBMX4RXVCzDW2t4hLBC3mVssKji8qk+ha1EiRzVEqMD8bK20FcIJZPPpyKRY1xDVYDTFUxIohTrvUYAclvh+Z69mT93tHzp+rcARvupwlL8YFj01MvDovmPqUHacaYb+z/ncCFe1eS8UDJU2FuyRYfwDztq8qlzdvmPrd/WT4VKML6VKCgyw6oAbYAI5JldIS0pbEDKcMViiHbVBabPYK0p1Kx2BxRUMJD17SXD+5rc8qb2pNFDZgxH/PYetq86swlDC8UjjuJn4G356RdytzvGc8szu3IBkQcIoM1Y+M35jFejUV7QDcVQ2/B7CoFE20bM9HLxmWILm82dpgzdR/a54Zwi+2S9sHR4Q="
-    runtime: nodejs6.10
+    runtime: nodejs8.10
     memory_size: 128
     timeout: 30
     region: eu-west-1
@@ -48,7 +48,7 @@ deploy:
     handler_name: handle
     role:
       secure: "fRPdfjRIHETIV2gsA+iCgFcMyvgV6cBACrsFveMjoyppwPjb7HDpHNvP0WNHYT8rRVt+0XPbdGHJvZKC887TZaVRsnvbVY+8CF/qKDryrpvEd1W/k69O4EUQU2fZTtsVNCHIn9vfJWXVGWX1wcbFrp8eqhtDAZRTlVhPlPtxsFvNmsT0Hjt30WuuLg3fEXokB7WTFZQPTM7coMd5chqExisStpoyBb0QxN/JkQ0eMUKCm2H0WosVF8cjYMVitNL+eA9c2lv8k+7Mrlh/dWgK66EP7QSvA2mO1FFJf0r2yUIHLCmqiJq7zigUbjQHpwS6kDNueF1AXk8wNo4KT04bH+1yr/TOX9nlF/RDteneVkNP9FvQFXT3ZUQb+wsiA2L6HCXMsNGN9XUpcywW8K+fmksjbF1b926b1I/2MYDLCbRKk2BVXIy2UVPZWEOyaYpv0arlMBu+C9VO4qrkNbxY52CWzxor+sQkVolny+JEAz+65kPTE6HDeyw508rdqSA2ZvxjeJ8WrTFxnzdX9oroy0lEcfvrZjMtdS1gT2G46qbEDQ8QZbGhui+rV16ITiC49Xgy55LiIGpwCDzS9IbwdNH1Qdc7tRzVqdack1o2GBAwoVGZad6XfZvPQFe8NwIsAYKzaJkAcb4FboH2ER4uk2rpurwieI06JKfzeHCZN1Y="
-    runtime: nodejs6.10
+    runtime: nodejs8.10
     memory_size: 128
     timeout: 30
     region: eu-west-1

@@ -58,3 +58,22 @@ Feature: Sending logs to Loggly
     """
     {"timestamp":"2018-03-01T00:01:00.000Z","message":"Something happened","logGroup":"/aws/lambda/cucumber","logStream":"a1b2c3","lambdaRequestId":"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx","lambdaFunction":"cucumber"}
     """
+
+  Scenario: Send SNS Failure logs successfully
+    Given the config is set to
+    """
+    {
+      "groups": [
+        {
+          "match": "^sns\\/.+\\/Failure$",
+          "strategy": "sns",
+          "tags": ["cucumber","sns","cloudwatch2loggly"]
+        }
+      ]
+    }
+    """
+    When I send the file "cloudwatch-logs-event-sns-failure.js"
+    Then a request to Loggly was send at "http://loggly-dummy/bulk/dev-token/tag/cucumber,sns,cloudwatch2loggly" with
+    """
+    {"timestamp":"2018-03-01T00:00:00.000Z","message":"\"Something went horribly wrong\"","logGroup":"sns/aws-test-1/123456789012/cucumber/Failure","logStream":"abcdef12-3456-7890-abcd-ef1234567890","snsTopicArn":"arn:aws:sns:aws-test-1:123456789012:cucumber-topic","snsDeliveryDestination":"arn:aws:sqs:aws-test-1:123456789012:dbg-sns-40599u1jui68jlx"}
+    """
